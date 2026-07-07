@@ -1,0 +1,94 @@
+# ==========================
+# Python
+# ==========================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+.venv/
+env/
+
+# ==========================
+# Environment Variables
+# ==========================
+.env
+.env.*
+.env.example
+backend/.env
+
+# ==========================
+# Database
+# ==========================
+*.db
+*.sqlite
+*.sqlite3
+
+# ==========================
+# ML Models
+# ==========================
+*.pkl
+*.joblib
+*.h5
+*.onnx
+
+# ==========================
+# Logs
+# ==========================
+*.log
+logs/
+
+# ==========================
+# FastAPI
+# ==========================
+.coverage
+htmlcov/
+.pytest_cache/
+
+# ==========================
+# VS Code
+# ==========================
+.vscode/
+
+# ==========================
+# PyCharm
+# ==========================
+.idea/
+
+# ==========================
+# Node.js / React
+# ==========================
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+
+# npm logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ==========================
+# OS Files
+# ==========================
+.DS_Store
+Thumbs.db
+
+# ==========================
+# Docker
+# ==========================
+docker-data/
+
+venv/
+backend/venv/
+.env
+__pycache__/
+*.pyc
+
+.env
+backend/.env
+venv/
+backend/venv/
+__pycache__/
+travelplanner.db
+node_modules/

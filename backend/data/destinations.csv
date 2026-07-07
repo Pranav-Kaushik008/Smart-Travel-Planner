@@ -1,0 +1,105 @@
+destination,budget,days,type,season
+Goa,15000,3,Beach,Summer
+Manali,18000,5,Mountain,Winter
+Coorg,10000,2,Nature,Monsoon
+Ooty,12000,3,Nature,Winter
+Jaipur,14000,4,Historical,Winter
+Mysore,9000,2,Historical,All
+Rishikesh,13000,3,Adventure,Winter
+Ladakh,25000,7,Adventure,Summer
+Kerala,20000,5,Beach,Monsoon
+Andaman,30000,6,Beach,Summer
+Goa,22000,4,Beach,Winter
+Goa,12000,2,Beach,Summer
+Manali,25000,6,Mountain,Winter
+Manali,15000,4,Mountain,Summer
+Coorg,16000,4,Nature,All
+Coorg,9000,2,Nature,Monsoon
+Ooty,18000,5,Nature,Winter
+Ooty,11000,3,Nature,Summer
+Jaipur,20000,5,Historical,Winter
+Jaipur,12000,3,Historical,All
+Mysore,15000,4,Historical,Summer
+Rishikesh,18000,5,Adventure,Summer
+Rishikesh,10000,2,Adventure,Winter
+Ladakh,35000,8,Adventure,Summer
+Ladakh,40000,10,Adventure,Summer
+Kerala,28000,6,Beach,Winter
+Kerala,18000,4,Nature,Monsoon
+Andaman,45000,7,Beach,Winter
+Andaman,28000,5,Beach,Summer
+Varanasi,8000,2,Religious,Winter
+Varanasi,12000,4,Religious,All
+Varanasi,10000,3,Religious,Winter
+Amritsar,7000,2,Religious,Winter
+Amritsar,11000,3,Religious,All
+Amritsar,14000,4,Religious,Summer
+Tirupati,6000,2,Religious,All
+Tirupati,9000,3,Religious,Winter
+Jim Corbett,15000,3,Wildlife,Winter
+Jim Corbett,20000,4,Wildlife,Winter
+Jim Corbett,12000,2,Wildlife,Summer
+Kaziranga,18000,3,Wildlife,Winter
+Kaziranga,22000,4,Wildlife,Monsoon
+Kaziranga,16000,2,Wildlife,All
+Sundarbans,14000,3,Wildlife,Winter
+Sundarbans,19000,4,Wildlife,All
+Hampi,10000,2,Historical,Winter
+Hampi,15000,4,Historical,Winter
+Hampi,12000,3,Historical,All
+Rann of Kutch,22000,4,Adventure,Winter
+Rann of Kutch,30000,6,Adventure,Winter
+Goa,28000,5,Beach,Winter
+Manali,30000,7,Mountain,Winter
+Coorg,22000,5,Nature,All
+Ooty,25000,6,Nature,Winter
+Jaipur,27000,6,Historical,Winter
+Mysore,18000,5,Historical,All
+Rishikesh,22000,6,Adventure,Winter
+Ladakh,48000,9,Adventure,Summer
+Kerala,35000,7,Beach,Monsoon
+Andaman,50000,8,Beach,Summer
+Varanasi,15000,5,Religious,Winter
+Amritsar,16000,5,Religious,All
+Tirupati,12000,4,Religious,All
+Jim Corbett,26000,5,Wildlife,Winter
+Kaziranga,28000,5,Wildlife,Winter
+Sundarbans,25000,5,Wildlife,Winter
+Hampi,18000,5,Historical,Winter
+Rann of Kutch,38000,7,Adventure,Winter
+Goa,17000,3,Beach,Monsoon
+Manali,19000,4,Mountain,Summer
+Coorg,11000,3,Nature,Monsoon
+Ooty,13000,3,Nature,Summer
+Jaipur,15000,3,Historical,All
+Mysore,11000,3,Historical,All
+Rishikesh,14000,3,Adventure,Summer
+Ladakh,29000,6,Adventure,Summer
+Kerala,22000,4,Beach,Monsoon
+Andaman,33000,5,Beach,Summer
+Varanasi,9000,3,Religious,Winter
+Amritsar,8500,2,Religious,Winter
+Tirupati,7500,2,Religious,All
+Jim Corbett,14000,3,Wildlife,Summer
+Kaziranga,17000,3,Wildlife,Monsoon
+Sundarbans,15000,3,Wildlife,All
+Hampi,9500,2,Historical,All
+Rann of Kutch,19000,3,Adventure,Winter
+Goa,32000,6,Beach,Winter
+Manali,35000,8,Mountain,Winter
+Coorg,28000,6,Nature,All
+Ooty,29000,7,Nature,Winter
+Jaipur,32000,7,Historical,Winter
+Mysore,22000,6,Historical,All
+Rishikesh,26000,7,Adventure,Winter
+Ladakh,52000,10,Adventure,Summer
+Kerala,42000,8,Beach,Monsoon
+Andaman,58000,9,Beach,Summer
+Varanasi,18000,6,Religious,Winter
+Amritsar,19000,6,Religious,All
+Tirupati,15000,5,Religious,All
+Jim Corbett,32000,6,Wildlife,Winter
+Kaziranga,34000,6,Wildlife,Winter
+Sundarbans,30000,6,Wildlife,Winter
+Hampi,22000,6,Historical,Winter
+Rann of Kutch,45000,8,Adventure,Winter
