@@ -54,10 +54,14 @@ class RecommendationEngine:
             ("Adventure", "Summer"): "Ladakh",
             ("Adventure", "Winter"): "Rishikesh",
             ("Historical", "Winter"): "Jaipur",
-            ("Historical", "Summer"): "Mysore",
-            ("Religious", "Winter"): "Varanasi",
+            ("Historical", "All"): "Mysore",
             ("Wildlife", "Winter"): "Jim Corbett",
-            ("Wildlife", "Monsoon"): "Kaziranga"
+            ("Wildlife", "Monsoon"): "Kaziranga",
+            ("Spiritual & Religious", "Summer"): "Kedarnath",
+            ("Spiritual & Religious", "Monsoon"): "Tirupati",
+            ("Spiritual & Religious", "All"): "Ayodhya",
+            ("Spiritual & Religious", "Winter"): "Varanasi"
+                    
         }
         
         default_fallback = "Goa"

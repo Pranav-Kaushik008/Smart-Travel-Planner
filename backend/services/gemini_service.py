@@ -17,8 +17,107 @@ def get_mock_itinerary(destination: str, days: int, travel_type: str) -> str:
         "Varanasi": ["Kashi Vishwanath Temple", "Dashashwamedh Ghat", "Sarnath", "Assi Ghat", "Ganga Aarti", "Banarasi Saree Market"],
         "Rishikesh": ["Laxman Jhula", "Triveni Ghat", "Parmarth Niketan", "Neer Garh Waterfall", "Beatles Ashram", "Shivpuri Rafting"],
         "Coorg": ["Abbey Falls", "Raja's Seat", "Dubare Elephant Camp", "Tala Kaveri", "Golden Temple (Bylakuppe)", "Mandalpatti Peak"],
-        "Ooty": ["Ooty Botanical Gardens", "Doddabetta Peak", "Ooty Lake", "Rose Garden", "Toy Train Ride", "Pykara Waterfalls"]
-    }
+        "Ooty": ["Ooty Botanical Gardens", "Doddabetta Peak", "Ooty Lake", "Rose Garden", "Toy Train Ride", "Pykara Waterfalls"],
+        "Tirupati": [
+        "Sri Venkateswara Temple",
+        "Akasa Ganga",
+        "Silathoranam",
+        "Kapila Theertham",
+        "Sri Padmavathi Temple",
+        "Japali Hanuman Temple"
+        ],
+
+    "Haridwar": [
+        "Har Ki Pauri",
+        "Mansa Devi Temple",
+        "Chandi Devi Temple",
+        "Bharat Mata Mandir",
+        "Daksha Mahadev Temple",
+        "Evening Ganga Aarti"
+    ],
+
+    "Ayodhya": [
+        "Ram Mandir",
+        "Hanuman Garhi",
+        "Kanak Bhawan",
+        "Ram Ki Paidi",
+        "Saryu River Ghat",
+        "Nageshwarnath Temple"
+    ],
+
+    "Ujjain": [
+        "Mahakaleshwar Jyotirlinga",
+        "Kal Bhairav Temple",
+        "Harsiddhi Temple",
+        "Ram Ghat",
+        "Mangalnath Temple",
+        "Sandipani Ashram"
+    ],
+
+    "Puri": [
+        "Jagannath Temple",
+        "Golden Beach",
+        "Gundicha Temple",
+        "Konark Sun Temple",
+        "Chilika Lake",
+        "Narendra Tank"
+    ],
+
+    "Rameswaram": [
+        "Ramanathaswamy Temple",
+        "Agni Theertham",
+        "Dhanushkodi",
+        "Pamban Bridge",
+        "Kothandaramaswamy Temple",
+        "Five Faced Hanuman Temple"
+    ],
+
+    "Kedarnath": [
+        "Kedarnath Temple",
+        "Bhairavnath Temple",
+        "Vasuki Tal",
+        "Adi Shankaracharya Samadhi",
+        "Gandhi Sarovar",
+        "Chorabari Tal"
+    ],
+
+    "Badrinath": [
+        "Badrinath Temple",
+        "Tapt Kund",
+        "Mana Village",
+        "Vyas Gufa",
+        "Bheem Pul",
+        "Charan Paduka"
+    ],
+
+    "Amritsar": [
+        "Golden Temple",
+        "Akal Takht",
+        "Jallianwala Bagh",
+        "Wagah Border",
+        "Durgiana Temple",
+        "Partition Museum"
+    ],
+
+    "Madurai": [
+        "Meenakshi Amman Temple",
+        "Thirumalai Nayakkar Palace",
+        "Alagar Kovil",
+        "Gandhi Memorial Museum",
+        "Koodal Azhagar Temple",
+        "Vandiyur Mariamman Teppakulam"
+    ],
+
+    "Dwarka": [
+        "Dwarkadhish Temple",
+        "Bet Dwarka",
+        "Nageshwar Jyotirlinga",
+        "Rukmini Temple",
+        "Gomti Ghat",
+        "Sudama Setu"
+    ]
+}
+
     
     dest_attractions = attractions.get(destination, ["Local Landmarks", "Cultural Markets", "Nature Viewpoints", "Scenic Parks", "Historical Buildings", "Popular Cafes"])
     

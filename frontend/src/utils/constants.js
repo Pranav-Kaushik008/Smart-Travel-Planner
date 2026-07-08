@@ -15,22 +15,38 @@ export const SEASONS = [
 ];
 
 export const DESTINATION_COVERS = {
-  Goa: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800",
-  Manali: "https://images.unsplash.com/photo-1548574505-5e239809ee19?w=800",
-  Ladakh: "https://images.unsplash.com/photo-1596422846543-75c6fc18a52b?w=800",
-  Kerala: "https://images.unsplash.com/photo-1593693397690-362cb9666fc2?w=800",
-  Andaman: "https://images.unsplash.com/photo-1589979482837-e74f2e145060?w=800",
-  Jaipur: "https://images.unsplash.com/photo-1477584322813-ac72149b1424?w=800",
-  Varanasi: "https://images.unsplash.com/photo-1561361060-61992715d97e?w=800",
-  Amritsar: "https://images.unsplash.com/photo-1514222134-b57cbb8ce073?w=800",
-  Tirupati: "https://images.unsplash.com/photo-1601918774946-25832a4be0d6?w=800",
-  "Jim Corbett": "https://images.unsplash.com/photo-1615959189204-38a62db24511?w=800",
-  Kaziranga: "https://images.unsplash.com/photo-1581852017103-e3ac92098780?w=800",
-  Sundarbans: "https://images.unsplash.com/photo-1608958416715-dbb0a218fca6?w=800",
-  Hampi: "https://images.unsplash.com/photo-1600100397608-f010e964b4c7?w=800",
-  "Rann of Kutch": "https://images.unsplash.com/photo-1616428236758-a25037d0ceb9?w=800",
-  Coorg: "https://images.unsplash.com/photo-1583089892943-e02e5b017b6a?w=800",
-  Ooty: "https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=800",
-  Mysore: "https://images.unsplash.com/photo-1590050752117-238cb0612b1b?w=800",
-  Rishikesh: "https://images.unsplash.com/photo-1598977123418-45f58803a5e8?w=800"
+  Goa: "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=1200",
+
+  Manali: "https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?w=1200",
+
+  Ladakh: "https://images.unsplash.com/photo-1581793745862-99fde7fa73d2?w=1200",
+
+  Kerala: "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=1200",
+
+  Andaman: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200",
+
+  Jaipur: "https://images.unsplash.com/photo-1477587458883-47145ed94245?w=1200",
+
+  Varanasi: "https://images.unsplash.com/photo-1627894483216-2138af692e32?w=1200",
+
+  Rishikesh: "https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?w=1200",
+
+  Coorg: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1200",
+
+  Ooty: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1200",
+
+  Tirupati: "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?w=1200",
+
+  Haridwar: "https://images.unsplash.com/photo-1561361513-2d000a50f0dc?w=1200",
+
+  Ayodhya: "https://images.unsplash.com/photo-1605649487212-47bdab064df7?w=1200",
+
+  Shirdi: "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=1200",
+
+  Dwarka: "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=1200",
+
+  Ujjain: "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=1200",
+
+  Kedarnath: "https://images.unsplash.com/photo-1627894483216-2138af692e32?w=1200",
+
 };

@@ -2,8 +2,8 @@ from schemas.travel import BudgetEstimate
 
 def estimate_budget(destination: str, days: int, travel_type: str, total_budget: float) -> BudgetEstimate:
     # Heuristics for travel destination cost tier
-    expensive_destinations = ["Andaman", "Ladakh", "Goa"]
-    mid_destinations = ["Manali", "Kerala", "Jaipur", "Ooty"]
+    expensive_destinations = ["Andaman", "Ladakh", "Goa","Varanasi"]
+    mid_destinations = ["Manali", "Kerala", "Jaipur", "Ooty","Coorg","Tirupati"]
     
     # Establish daily multipliers based on destination tier
     if destination in expensive_destinations:
