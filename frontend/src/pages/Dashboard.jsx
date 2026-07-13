@@ -118,7 +118,7 @@ const Dashboard = () => {
             {analytics.trips_over_time.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={analytics.trips_over_time}>
-                  <XAxis dataKey="month" stroke="#94a3b8" />
+                  <XAxis dataKey="month" stroke="#839aba" />
                   <YAxis allowDecimals={false} stroke="#94a3b8" />
                   <Tooltip 
                     contentStyle={{ 

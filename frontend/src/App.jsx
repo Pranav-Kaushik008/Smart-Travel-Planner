@@ -17,46 +17,101 @@ import ProfilePage from "./pages/ProfilePage";
 import { Toaster } from "react-hot-toast";
 
 const AppContent = () => {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // We show the Sidebar only if user is logged in AND they are on a dashboard/planner page
-  const showSidebar = user && [
-    "/dashboard",
-    "/planner",
-    "/history",
-    "/profile"
-  ].includes(location.pathname);
+  const showSidebar =
+    user &&
+    ["/dashboard", "/planner", "/history", "/profile"].includes(
+      location.pathname
+    );
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
       <Navbar onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-      
-      <div className="flex-1 flex relative">
+
+      <div className="flex">
         {showSidebar && (
-          <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+          <Sidebar
+            isOpen={sidebarOpen}
+            onClose={() => setSidebarOpen(false)}
+          />
         )}
-        
+
         <main className="flex-1 w-full overflow-x-hidden">
           <Routes>
-            {/* Public routes */}
             <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
-            <Route path="/register" element={user ? <Navigate to="/dashboard" replace /> : <RegisterPage />} />
-            
-            {/* Protected routes */}
-            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="/planner" element={<ProtectedRoute><TravelPlanner /></ProtectedRoute>} />
-            <Route path="/history" element={<ProtectedRoute><TripHistory /></ProtectedRoute>} />
-            <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-            
-            {/* Fallback */}
+
+            <Route
+              path="/login"
+              element={
+                user ? (
+                  <Navigate to="/dashboard" replace />
+                ) : (
+                  <LoginPage />
+                )
+              }
+            />
+
+            <Route
+              path="/register"
+              element={
+                user ? (
+                  <Navigate to="/dashboard" replace />
+                ) : (
+                  <RegisterPage />
+                )
+              }
+            />
+
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/planner"
+              element={
+                <ProtectedRoute>
+                  <TravelPlanner />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/history"
+              element={
+                <ProtectedRoute>
+                  <TripHistory />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
+
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
       </div>
-      <Toaster position="bottom-right" toastOptions={{ duration: 4000 }} />
+
+      <Toaster
+        position="bottom-right"
+        toastOptions={{
+          duration: 4000,
+        }}
+      />
     </div>
   );
 };
