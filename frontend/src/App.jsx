@@ -28,7 +28,7 @@ const AppContent = () => {
     );
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
+    <div className="min-h-screen bg-slate-950 text-slate-100 transition-colors duration-300">
       <Navbar onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
       <div className="flex">

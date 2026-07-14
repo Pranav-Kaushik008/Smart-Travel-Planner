@@ -19,6 +19,14 @@ class TripCreate(BaseModel):
     activity_cost: float
     total_cost: float
 
+class TripExpenseUpdate(BaseModel):
+    """User-reported actual expenses for a completed trip."""
+    actual_hotel: Optional[float] = None
+    actual_food: Optional[float] = None
+    actual_travel: Optional[float] = None
+    actual_activities: Optional[float] = None
+    actual_misc: Optional[float] = None
+
 class TripResponse(BaseModel):
     id: int
     user_id: int
@@ -37,6 +45,12 @@ class TripResponse(BaseModel):
     travel_cost: float
     activity_cost: float
     total_cost: float
+    actual_hotel: Optional[float] = None
+    actual_food: Optional[float] = None
+    actual_travel: Optional[float] = None
+    actual_activities: Optional[float] = None
+    actual_misc: Optional[float] = None
+    actual_total: Optional[float] = None
     created_at: datetime
 
     class Config:

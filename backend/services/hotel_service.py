@@ -14,6 +14,7 @@ async def get_hotels_by_destination(destination: str, db: AsyncSession) -> List[
         # based on destination
         default_hotels = [
             Hotel(
+                id=1,
                 name=f"{destination} Resort & Spa",
                 destination=destination,
                 rating=4.5,
@@ -22,6 +23,7 @@ async def get_hotels_by_destination(destination: str, db: AsyncSession) -> List[
                 image_url="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500"
             ),
             Hotel(
+                id=2,
                 name=f"Vista Inn {destination}",
                 destination=destination,
                 rating=4.0,
@@ -30,6 +32,7 @@ async def get_hotels_by_destination(destination: str, db: AsyncSession) -> List[
                 image_url="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=500"
             ),
             Hotel(
+                id=3,
                 name=f"Backpackers Stay {destination}",
                 destination=destination,
                 rating=3.8,

@@ -5,13 +5,24 @@ import TripCard from "../components/TripCard";
 import WeatherCard from "../components/WeatherCard";
 import BudgetBreakdown from "../components/BudgetBreakdown";
 import ItineraryTimeline from "../components/ItineraryTimeline";
-import { FaHistory, FaTimes, FaUndo, FaWallet } from "react-icons/fa";
+import { FaHistory, FaTimes, FaWallet, FaCheckCircle, FaReceipt, FaPen } from "react-icons/fa";
 import toast from "react-hot-toast";
+
+const EXPENSE_FIELDS = [
+  { key: "actual_hotel", label: "🏨 Hotels & Stay", color: "sky" },
+  { key: "actual_food", label: "🍽️ Food & Dining", color: "emerald" },
+  { key: "actual_travel", label: "🚕 Transport & Travel", color: "amber" },
+  { key: "actual_activities", label: "🎯 Activities & Tickets", color: "violet" },
+  { key: "actual_misc", label: "🛍️ Shopping & Misc", color: "rose" },
+];
 
 const TripHistory = () => {
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTrip, setSelectedTrip] = useState(null);
+  const [expenseEditing, setExpenseEditing] = useState(null); // trip id being edited
+  const [expenseForm, setExpenseForm] = useState({});
+  const [savingExpense, setSavingExpense] = useState(false);
 
   const fetchTrips = async () => {
     try {
@@ -47,18 +58,92 @@ const TripHistory = () => {
 
   const handleViewDetails = (trip) => {
     setSelectedTrip(trip);
+    setExpenseEditing(null);
   };
+
+  // Start editing expenses for a trip
+  const startExpenseEdit = (trip) => {
+    setExpenseEditing(trip.id);
+    setExpenseForm({
+      actual_hotel: trip.actual_hotel ?? "",
+      actual_food: trip.actual_food ?? "",
+      actual_travel: trip.actual_travel ?? "",
+      actual_activities: trip.actual_activities ?? "",
+      actual_misc: trip.actual_misc ?? "",
+    });
+  };
+
+  const handleExpenseChange = (key, value) => {
+    // Allow empty string or valid number
+    setExpenseForm((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const computeExpenseTotal = () => {
+    return EXPENSE_FIELDS.reduce((sum, f) => {
+      const val = parseFloat(expenseForm[f.key]);
+      return sum + (isNaN(val) ? 0 : val);
+    }, 0);
+  };
+
+  const handleSaveExpenses = async (tripId) => {
+    setSavingExpense(true);
+    try {
+      const payload = {};
+      EXPENSE_FIELDS.forEach((f) => {
+        const val = parseFloat(expenseForm[f.key]);
+        if (!isNaN(val)) payload[f.key] = val;
+      });
+
+      const res = await api.patch(`/trips/${tripId}/expenses`, payload);
+      const updated = res.data;
+
+      // Update local trips state
+      setTrips((prev) => prev.map((t) => (t.id === tripId ? updated : t)));
+      if (selectedTrip && selectedTrip.id === tripId) {
+        setSelectedTrip(updated);
+      }
+      setExpenseEditing(null);
+      toast.success("Expenses saved successfully!");
+    } catch (err) {
+      console.error("Error saving expenses", err);
+      toast.error("Failed to save expenses");
+    } finally {
+      setSavingExpense(false);
+    }
+  };
+
+  // Compute grand total across all trips
+  const grandTotalActual = trips.reduce((sum, t) => sum + (t.actual_total || 0), 0);
+  const tripsWithExpenses = trips.filter((t) => t.actual_total && t.actual_total > 0).length;
 
   if (loading) return <LoadingSpinner size="lg" text="Retrieving your saved itineraries..." />;
 
   return (
     <div className="p-6 space-y-8 max-w-7xl mx-auto">
       {/* Header */}
-      <div>
-        <h2 className="text-2xl font-extrabold text-slate-800 dark:text-white">Trip History</h2>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Review details of your saved itineraries.
-        </p>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h2 className="text-2xl font-extrabold text-slate-800 dark:text-white">Trip History</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            Review saved itineraries and track your actual travel expenses.
+          </p>
+        </div>
+
+        {/* Grand Total Expense Badge */}
+        {grandTotalActual > 0 && (
+          <div className="flex items-center gap-3 bg-gradient-to-r from-emerald-500/10 to-sky-500/10 border border-emerald-500/20 rounded-2xl px-5 py-3.5 shadow-sm">
+            <div className="p-2 bg-emerald-500/15 rounded-xl">
+              <FaWallet className="text-emerald-500 text-lg" />
+            </div>
+            <div>
+              <div className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Total Actual Spent</div>
+              <div className="text-xl font-black text-emerald-600 dark:text-emerald-400">
+                ₹{grandTotalActual.toLocaleString("en-IN")}
+              </div>
+              <div className="text-[10px] text-slate-400 font-semibold">{tripsWithExpenses} of {trips.length} trips logged</div>
+            </div>
+          </div>
+        )}
       </div>
 
       {trips.length === 0 ? (
@@ -129,6 +214,161 @@ const TripHistory = () => {
                   total_cost: selectedTrip.total_cost
                 }}
               />
+
+              {/* =============== EXPENSE TRACKER SECTION =============== */}
+              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+                {/* Header */}
+                <div className="bg-gradient-to-r from-emerald-500/5 via-sky-500/5 to-violet-500/5 px-6 py-4 flex items-center justify-between border-b border-slate-200/60 dark:border-slate-800/60">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-emerald-500/15 rounded-xl">
+                      <FaReceipt className="text-emerald-500" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-sm text-slate-800 dark:text-white">Actual Expenses</h4>
+                      <p className="text-[10px] text-slate-500 font-medium">Log what you actually spent on this trip</p>
+                    </div>
+                  </div>
+                  {expenseEditing !== selectedTrip.id && (
+                    <button
+                      onClick={() => startExpenseEdit(selectedTrip)}
+                      className="flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-xl bg-sky-500/10 text-sky-600 dark:text-sky-400 hover:bg-sky-500/20 transition-all"
+                    >
+                      <FaPen className="text-[10px]" />
+                      {selectedTrip.actual_total ? "Edit Expenses" : "Log Expenses"}
+                    </button>
+                  )}
+                </div>
+
+                {/* Expense Content */}
+                <div className="p-6">
+                  {expenseEditing === selectedTrip.id ? (
+                    /* ====== EDIT MODE ====== */
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {EXPENSE_FIELDS.map((f) => (
+                          <div key={f.key} className="space-y-1.5">
+                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">{f.label}</label>
+                            <div className="relative">
+                              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-slate-400 font-bold">₹</span>
+                              <input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                placeholder="0.00"
+                                value={expenseForm[f.key]}
+                                onChange={(e) => handleExpenseChange(f.key, e.target.value)}
+                                className="w-full pl-8 pr-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:outline-none"
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Live Total */}
+                      <div className="flex items-center justify-between bg-gradient-to-r from-emerald-500/5 to-sky-500/5 rounded-xl px-5 py-4 border border-emerald-500/15">
+                        <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Running Total</span>
+                        <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400">
+                          ₹{computeExpenseTotal().toLocaleString("en-IN")}
+                        </span>
+                      </div>
+
+                      {/* Comparison with estimated budget */}
+                      {selectedTrip.total_cost > 0 && (
+                        <div className="text-xs text-slate-500 text-center">
+                          {computeExpenseTotal() > selectedTrip.total_cost ? (
+                            <span className="text-rose-500 font-bold">
+                              ⚠️ Over budget by ₹{(computeExpenseTotal() - selectedTrip.total_cost).toLocaleString("en-IN")}
+                            </span>
+                          ) : (
+                            <span className="text-emerald-500 font-bold">
+                              ✅ Under budget by ₹{(selectedTrip.total_cost - computeExpenseTotal()).toLocaleString("en-IN")}
+                            </span>
+                          )}
+                          {" "}(Estimated: ₹{selectedTrip.total_cost.toLocaleString("en-IN")})
+                        </div>
+                      )}
+
+                      {/* Action Buttons */}
+                      <div className="flex gap-3 pt-2">
+                        <button
+                          onClick={() => handleSaveExpenses(selectedTrip.id)}
+                          disabled={savingExpense}
+                          className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-emerald-500 to-sky-500 text-white rounded-xl font-bold text-sm shadow-md hover:from-emerald-600 hover:to-sky-600 disabled:opacity-60 transition-all"
+                        >
+                          <FaCheckCircle />
+                          {savingExpense ? "Saving..." : "Save Expenses"}
+                        </button>
+                        <button
+                          onClick={() => setExpenseEditing(null)}
+                          className="px-5 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl font-bold text-sm transition-all"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : selectedTrip.actual_total ? (
+                    /* ====== VIEW MODE (has expenses logged) ====== */
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        {EXPENSE_FIELDS.map((f) => {
+                          const val = selectedTrip[f.key];
+                          if (!val && val !== 0) return null;
+                          return (
+                            <div key={f.key} className={`p-3.5 bg-${f.color}-500/5 border border-${f.color}-500/10 rounded-xl`}>
+                              <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">{f.label}</div>
+                              <div className={`text-lg font-black text-${f.color}-600 dark:text-${f.color}-400 mt-1`}>
+                                ₹{val.toLocaleString("en-IN")}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Total & Comparison */}
+                      <div className="flex items-center justify-between bg-gradient-to-r from-emerald-500/8 to-sky-500/8 rounded-xl px-5 py-4 border border-emerald-500/15">
+                        <div>
+                          <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Actual Total Spent</div>
+                          <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-0.5">
+                            ₹{selectedTrip.actual_total.toLocaleString("en-IN")}
+                          </div>
+                        </div>
+                        {selectedTrip.total_cost > 0 && (
+                          <div className="text-right">
+                            <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">vs Estimated</div>
+                            <div className="text-sm font-bold text-slate-600 dark:text-slate-300 mt-0.5">
+                              ₹{selectedTrip.total_cost.toLocaleString("en-IN")}
+                            </div>
+                            <div className={`text-xs font-bold mt-0.5 ${selectedTrip.actual_total > selectedTrip.total_cost ? "text-rose-500" : "text-emerald-500"}`}>
+                              {selectedTrip.actual_total > selectedTrip.total_cost
+                                ? `↑ ₹${(selectedTrip.actual_total - selectedTrip.total_cost).toLocaleString("en-IN")} over`
+                                : `↓ ₹${(selectedTrip.total_cost - selectedTrip.actual_total).toLocaleString("en-IN")} under`}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    /* ====== EMPTY STATE ====== */
+                    <div className="text-center py-8 space-y-3">
+                      <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto">
+                        <FaWallet className="text-slate-400 text-xl" />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-sm text-slate-700 dark:text-white">No Expenses Logged Yet</h4>
+                        <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+                          After completing your trip, log your actual spending to compare against the estimated budget.
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => startExpenseEdit(selectedTrip)}
+                        className="px-5 py-2.5 bg-sky-500/10 text-sky-600 dark:text-sky-400 rounded-xl font-bold text-xs hover:bg-sky-500/20 transition-all inline-flex items-center gap-2"
+                      >
+                        <FaPen className="text-[10px]" /> Start Logging Expenses
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
 
               {/* Day wise calendar plan */}
               {selectedTrip.itinerary ? (

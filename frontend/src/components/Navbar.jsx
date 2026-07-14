@@ -1,27 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { FaSun, FaMoon, FaBars, FaTimes, FaUser, FaSignOutAlt, FaCompass } from "react-icons/fa";
+import { FaBars, FaUser, FaSignOutAlt, FaCompass } from "react-icons/fa";
 
 const Navbar = ({ onToggleSidebar }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [darkMode, setDarkMode] = useState(() => {
-    return localStorage.getItem("theme") === "dark" || 
-      (!localStorage.getItem("theme") && window.matchMedia("(prefers-color-scheme: dark)").matches);
-  });
 
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
-      document.body.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      document.body.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
-  }, [darkMode]);
+  React.useEffect(() => {
+    document.documentElement.classList.add("dark");
+    document.body.classList.add("dark");
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -49,14 +38,6 @@ const Navbar = ({ onToggleSidebar }) => {
         </div>
 
         <nav className="flex items-center space-x-4">
-          <button
-            onClick={() => setDarkMode(!darkMode)}
-            className="rounded-full p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
-            title="Toggle theme"
-          >
-            {darkMode ? <FaSun className="h-5 w-5 text-amber-400" /> : <FaMoon className="h-5 w-5 text-indigo-500" />}
-          </button>
-
           {user ? (
             <div className="flex items-center space-x-4">
               <span className="hidden md:inline text-sm font-medium text-slate-600 dark:text-slate-300">

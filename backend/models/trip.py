@@ -23,12 +23,20 @@ class Trip(Base):
     # Itinerary (AI generated day-wise content stored as JSON or detailed text)
     itinerary: Mapped[str] = mapped_column(Text, nullable=True)
     
-    # Budget breakdown
+    # Budget breakdown (AI estimated)
     hotel_cost: Mapped[float] = mapped_column(Float, default=0.0)
     food_cost: Mapped[float] = mapped_column(Float, default=0.0)
     travel_cost: Mapped[float] = mapped_column(Float, default=0.0)
     activity_cost: Mapped[float] = mapped_column(Float, default=0.0)
     total_cost: Mapped[float] = mapped_column(Float, default=0.0)
+    
+    # Actual expenses (user-reported)
+    actual_hotel: Mapped[float] = mapped_column(Float, nullable=True, default=None)
+    actual_food: Mapped[float] = mapped_column(Float, nullable=True, default=None)
+    actual_travel: Mapped[float] = mapped_column(Float, nullable=True, default=None)
+    actual_activities: Mapped[float] = mapped_column(Float, nullable=True, default=None)
+    actual_misc: Mapped[float] = mapped_column(Float, nullable=True, default=None)
+    actual_total: Mapped[float] = mapped_column(Float, nullable=True, default=None)
     
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     

@@ -23,15 +23,20 @@ async def get_dashboard_analytics(db: AsyncSession = Depends(get_db), current_us
             total_trips=0,
             most_popular_destination="N/A",
             average_budget=0.0,
+            average_days=0.0,
+            total_actual_spent=0.0,
             popular_destinations=[],
             budget_breakdown=[],
+            actual_breakdown=[],
             trips_over_time=[]
         )
         
-    # 2. Average Budget
-    stmt_avg = select(func.avg(Trip.budget)).where(Trip.user_id == current_user.id)
+    # 2. Average Budget & Average Days
+    stmt_avg = select(func.avg(Trip.budget), func.avg(Trip.days)).where(Trip.user_id == current_user.id)
     res_avg = await db.execute(stmt_avg)
-    average_budget = float(res_avg.scalar() or 0.0)
+    avg_row = res_avg.first()
+    average_budget = float(avg_row[0] or 0.0)
+    average_days = float(avg_row[1] or 0.0)
     
     # 3. Popular Destinations
     stmt_dest = select(Trip.destination, func.count(Trip.id).label("count")).where(Trip.user_id == current_user.id).group_by(Trip.destination).order_by(func.count(Trip.id).desc()).limit(5)
@@ -40,7 +45,7 @@ async def get_dashboard_analytics(db: AsyncSession = Depends(get_db), current_us
     
     most_popular_destination = popular_destinations[0].destination if popular_destinations else "N/A"
     
-    # 4. Budget Breakdown (Hotel, Food, Travel, Activity)
+    # 4. Estimated Budget Breakdown (Hotel, Food, Travel, Activity)
     stmt_costs = select(
         func.sum(Trip.hotel_cost),
         func.sum(Trip.food_cost),
@@ -58,9 +63,32 @@ async def get_dashboard_analytics(db: AsyncSession = Depends(get_db), current_us
             BudgetAnalytics(category="Travel", amount=float(costs[2] or 0.0)),
             BudgetAnalytics(category="Activity", amount=float(costs[3] or 0.0)),
         ]
+    
+    # 5. Actual Expenses (user-reported)
+    stmt_actual = select(
+        func.sum(Trip.actual_hotel),
+        func.sum(Trip.actual_food),
+        func.sum(Trip.actual_travel),
+        func.sum(Trip.actual_activities),
+        func.sum(Trip.actual_misc),
+        func.sum(Trip.actual_total)
+    ).where(Trip.user_id == current_user.id)
+    res_actual = await db.execute(stmt_actual)
+    actuals = res_actual.first()
+    
+    total_actual_spent = float(actuals[5] or 0.0) if actuals else 0.0
+    
+    actual_breakdown = []
+    if actuals:
+        actual_breakdown = [
+            BudgetAnalytics(category="Hotel", amount=float(actuals[0] or 0.0)),
+            BudgetAnalytics(category="Food", amount=float(actuals[1] or 0.0)),
+            BudgetAnalytics(category="Travel", amount=float(actuals[2] or 0.0)),
+            BudgetAnalytics(category="Activities", amount=float(actuals[3] or 0.0)),
+            BudgetAnalytics(category="Miscellaneous", amount=float(actuals[4] or 0.0)),
+        ]
         
-    # 5. Trips Over Time (Grouped by Month)
-    # Since we are using SQLite in tests / local postgres in dev, we can write a database-agnostic parsing in python
+    # 6. Trips Over Time (Grouped by Month)
     stmt_trips = select(Trip.created_at).where(Trip.user_id == current_user.id).order_by(Trip.created_at.asc())
     res_trips = await db.execute(stmt_trips)
     dates = res_trips.scalars().all()
@@ -76,7 +104,10 @@ async def get_dashboard_analytics(db: AsyncSession = Depends(get_db), current_us
         total_trips=total_trips,
         most_popular_destination=most_popular_destination,
         average_budget=round(average_budget, 2),
+        average_days=round(average_days, 1),
+        total_actual_spent=round(total_actual_spent, 2),
         popular_destinations=popular_destinations,
         budget_breakdown=budget_breakdown,
+        actual_breakdown=actual_breakdown,
         trips_over_time=trips_over_time
     )

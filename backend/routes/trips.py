@@ -4,7 +4,7 @@ from sqlalchemy import select
 from typing import List
 from database.db import get_db
 from models.trip import Trip
-from schemas.trip import TripCreate, TripResponse
+from schemas.trip import TripCreate, TripResponse, TripExpenseUpdate
 from middleware.auth_middleware import get_current_user
 from models.user import User
 
@@ -42,6 +42,46 @@ async def get_trip_history(db: AsyncSession = Depends(get_db), current_user: Use
     res = await db.execute(stmt)
     trips = res.scalars().all()
     return list(trips)
+
+@router.patch("/trips/{trip_id}/expenses", response_model=TripResponse)
+async def update_trip_expenses(
+    trip_id: int,
+    data: TripExpenseUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Allow users to log their actual trip expenses after completing a trip."""
+    stmt = select(Trip).where(Trip.id == trip_id, Trip.user_id == current_user.id)
+    res = await db.execute(stmt)
+    trip = res.scalars().first()
+    
+    if not trip:
+        raise HTTPException(status_code=404, detail="Trip not found")
+    
+    # Update individual actual expense fields
+    if data.actual_hotel is not None:
+        trip.actual_hotel = data.actual_hotel
+    if data.actual_food is not None:
+        trip.actual_food = data.actual_food
+    if data.actual_travel is not None:
+        trip.actual_travel = data.actual_travel
+    if data.actual_activities is not None:
+        trip.actual_activities = data.actual_activities
+    if data.actual_misc is not None:
+        trip.actual_misc = data.actual_misc
+    
+    # Auto-compute actual_total from all filled fields
+    trip.actual_total = sum(filter(None, [
+        trip.actual_hotel,
+        trip.actual_food,
+        trip.actual_travel,
+        trip.actual_activities,
+        trip.actual_misc
+    ]))
+    
+    await db.commit()
+    await db.refresh(trip)
+    return trip
 
 @router.delete("/trips/{trip_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_trip(trip_id: int, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
