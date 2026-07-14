@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -36,6 +36,7 @@ const coverUrl = COVER_IMAGES[1]; // default vintage travel map cover
 
 const ProfilePage = () => {
   const { user, loading: authLoading } = useAuth();
+  const fileInputRef = useRef(null);
   const [activeTab, setActiveTab] = useState("overview");
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -44,6 +45,7 @@ const ProfilePage = () => {
   const [profile, setProfile] = useState({
     full_name: "",
     email: "",
+    profile_pic: "",
     phone: "",
     location: "",
     dob: "",
@@ -66,6 +68,7 @@ const ProfilePage = () => {
     setProfile({
       full_name: user.full_name || user.username || "",
       email: user.email || "",
+      profile_pic: user.profile_pic || localExtra.profile_pic || "",
       phone: user.phone || localExtra.phone || "",
       location: user.location || localExtra.location || "",
       dob: user.dob || localExtra.dob || "",
@@ -124,6 +127,50 @@ const ProfilePage = () => {
     });
   };
 
+  const handlePhotoChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 4 * 1024 * 1024) {
+      toast.error("Profile photo must be smaller than 4MB");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const base64Data = reader.result;
+      const loadingToast = toast.loading("Uploading profile photo...");
+      try {
+        const payload = {
+          ...profile,
+          profile_pic: base64Data
+        };
+
+        const res = await api.put("/profile", payload);
+        const serverUser = res.data;
+
+        const localExtra = JSON.parse(localStorage.getItem("profile_extra") || "null") || {};
+        localStorage.setItem("profile_extra", JSON.stringify({
+          ...localExtra,
+          profile_pic: base64Data
+        }));
+
+        setProfile((prev) => ({
+          ...prev,
+          profile_pic: serverUser.profile_pic || base64Data
+        }));
+        
+        toast.dismiss(loadingToast);
+        toast.success("Profile photo updated!");
+      } catch (err) {
+        console.error("Error updating photo", err);
+        toast.dismiss(loadingToast);
+        toast.error("Failed to update profile photo");
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSave = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
     const activeData = edited || profile;
@@ -133,6 +180,7 @@ const ProfilePage = () => {
       const payload = {
         full_name: activeData.full_name,
         email: activeData.email,
+        profile_pic: activeData.profile_pic,
         phone: activeData.phone,
         location: activeData.location,
         dob: activeData.dob,
@@ -150,6 +198,7 @@ const ProfilePage = () => {
 
       // Sync to local storage for backwards compatibility
       localStorage.setItem("profile_extra", JSON.stringify({
+        profile_pic: payload.profile_pic,
         phone: payload.phone,
         location: payload.location,
         dob: payload.dob,
@@ -164,6 +213,7 @@ const ProfilePage = () => {
       setProfile({
         ...profile,
         ...serverUser,
+        profile_pic: serverUser.profile_pic || payload.profile_pic,
         phone: serverUser.phone || payload.phone,
         location: serverUser.location || payload.location,
         dob: serverUser.dob || payload.dob,
@@ -247,10 +297,24 @@ const ProfilePage = () => {
         {/* Profile User Info Block */}
         <div className="relative px-6 md:px-10 pb-8 -mt-16 flex flex-col md:flex-row items-center md:items-end gap-6">
           <div className="relative group">
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              onChange={handlePhotoChange} 
+              accept="image/*" 
+              className="hidden" 
+            />
             <div className="w-32 h-32 rounded-full border-4 border-white dark:border-slate-900 bg-gradient-to-tr from-sky-500 via-indigo-500 to-purple-600 flex items-center justify-center text-white text-5xl font-extrabold shadow-2xl relative overflow-hidden">
-              {(profile.full_name || user.username || "U").substring(0, 1).toUpperCase()}
+              {profile.profile_pic ? (
+                <img src={profile.profile_pic} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                (profile.full_name || user.username || "U").substring(0, 1).toUpperCase()
+              )}
             </div>
-            <div className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
+            <div 
+              onClick={() => fileInputRef.current.click()} 
+              className="absolute inset-0 rounded-full bg-black/45 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer"
+            >
               <FaCamera className="text-white text-xl" />
             </div>
           </div>

@@ -13,6 +13,7 @@ router = APIRouter(tags=["Profile"])
 class ProfileUpdate(BaseModel):
     full_name: Optional[str] = None
     email: Optional[EmailStr] = None
+    profile_pic: Optional[str] = None
     phone: Optional[str] = None
     location: Optional[str] = None
     dob: Optional[str] = None
@@ -37,6 +38,8 @@ async def update_profile(
         current_user.full_name = data.full_name
     if data.email is not None:
         current_user.email = data.email
+    if data.profile_pic is not None:
+        current_user.profile_pic = data.profile_pic
     if data.phone is not None:
         current_user.phone = data.phone
     if data.location is not None:

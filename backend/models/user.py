@@ -19,6 +19,7 @@ class User(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     # Extra profile fields
+    profile_pic: Mapped[str] = mapped_column(Text, nullable=True) # Base64 encoded or URL
     phone: Mapped[str] = mapped_column(String(30), nullable=True)
     location: Mapped[str] = mapped_column(String(100), nullable=True)
     dob: Mapped[str] = mapped_column(String(20), nullable=True)

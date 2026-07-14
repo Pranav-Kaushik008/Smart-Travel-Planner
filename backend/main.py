@@ -20,6 +20,7 @@ async def lifespan(app: FastAPI):
          # Ensure user profile columns exist in the database (for PostgreSQL if table already existed)
         if engine.dialect.name == "postgresql":
             try:
+                await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_pic TEXT;"))
                 await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR(30);"))
                 await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS location VARCHAR(100);"))
                 await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS dob VARCHAR(20);"))
