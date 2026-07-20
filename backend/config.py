@@ -17,6 +17,9 @@ class Settings(BaseSettings):
     # Keys
     OPENWEATHER_API_KEY: str = ""
     GEMINI_API_KEY: str = ""
+    OPENROUTE_API_KEY: str = ""
+    AVIATIONSTACK_API_KEY: str = ""
+    RAPIDAPI_KEY: str = ""
     
     # JWT Settings
     JWT_SECRET_KEY: str = "supersecretkeychangeinproduction12345!"

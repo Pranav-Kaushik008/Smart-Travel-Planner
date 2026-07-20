@@ -16,7 +16,9 @@ import {
   FaPen,
   FaChartPie,
   FaCompass,
-  FaHotel
+  FaHotel,
+  FaEye,
+  FaTimes
 } from "react-icons/fa";
 import { ResponsiveContainer, BarChart, Bar, XAxis, Tooltip as ChartTooltip, Cell } from "recharts";
 import toast from "react-hot-toast";
@@ -35,12 +37,13 @@ const COVER_IMAGES = [
 const coverUrl = COVER_IMAGES[1]; // default vintage travel map cover
 
 const ProfilePage = () => {
-  const { user, loading: authLoading } = useAuth();
+  const { user, updateUser, loading: authLoading } = useAuth();
   const fileInputRef = useRef(null);
   const [activeTab, setActiveTab] = useState("overview");
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [showPhotoViewer, setShowPhotoViewer] = useState(false);
 
   const [profile, setProfile] = useState({
     full_name: "",
@@ -148,6 +151,7 @@ const ProfilePage = () => {
 
         const res = await api.put("/profile", payload);
         const serverUser = res.data;
+        updateUser(serverUser);
 
         const localExtra = JSON.parse(localStorage.getItem("profile_extra") || "null") || {};
         localStorage.setItem("profile_extra", JSON.stringify({
@@ -195,6 +199,7 @@ const ProfilePage = () => {
       // Call backend to persist user details
       const res = await api.put("/profile", payload);
       const serverUser = res.data;
+      updateUser(serverUser);
 
       // Sync to local storage for backwards compatibility
       localStorage.setItem("profile_extra", JSON.stringify({
@@ -311,11 +316,25 @@ const ProfilePage = () => {
                 (profile.full_name || user.username || "U").substring(0, 1).toUpperCase()
               )}
             </div>
-            <div 
-              onClick={() => fileInputRef.current.click()} 
-              className="absolute inset-0 rounded-full bg-black/45 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer"
-            >
-              <FaCamera className="text-white text-xl" />
+            <div className="absolute inset-0 rounded-full bg-black/55 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3.5">
+              {profile.profile_pic && (
+                <button
+                  type="button"
+                  onClick={() => setShowPhotoViewer(true)}
+                  className="p-2 bg-white/15 hover:bg-white/25 rounded-full text-white text-base transition-all"
+                  title="View Photo"
+                >
+                  <FaEye />
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => fileInputRef.current.click()}
+                className="p-2 bg-white/15 hover:bg-white/25 rounded-full text-white text-base transition-all"
+                title="Change Photo"
+              >
+                <FaCamera />
+              </button>
             </div>
           </div>
           
@@ -811,6 +830,27 @@ const ProfilePage = () => {
         </div>
 
       </div>
+
+      {showPhotoViewer && profile.profile_pic && (
+        <div 
+          className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 cursor-zoom-out animate-fade-in"
+          onClick={() => setShowPhotoViewer(false)}
+        >
+          <div className="relative max-w-3xl max-h-[85vh] w-full flex flex-col items-center justify-center" onClick={(e) => e.stopPropagation()}>
+            <button 
+              onClick={() => setShowPhotoViewer(false)}
+              className="absolute -top-12 right-0 p-2 text-white/70 hover:text-white text-xl bg-slate-800/40 rounded-full transition-all"
+            >
+              <FaTimes />
+            </button>
+            <img 
+              src={profile.profile_pic} 
+              alt="Profile Full Preview" 
+              className="max-w-full max-h-[80vh] rounded-3xl object-contain shadow-2xl border-4 border-white/10" 
+            />
+          </div>
+        </div>
+      )}
 
     </div>
   );

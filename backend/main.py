@@ -5,7 +5,7 @@ from database.db import engine, Base
 from config import settings
 from sqlalchemy import text
 from database.seed import seed_hotels
-from routes import auth, planner, weather, trips, hotels, dashboard, profile
+from routes import auth, planner, weather, trips, hotels, dashboard, profile, transport
 from services.recommendation_service import recommendation_engine
 
 
@@ -86,6 +86,7 @@ app.include_router(trips.router, prefix="/api")
 app.include_router(hotels.router, prefix="/api")
 app.include_router(dashboard.router, prefix="/api")
 app.include_router(profile.router, prefix="/api")
+app.include_router(transport.router, prefix="/api")
 
 
 @app.get("/")

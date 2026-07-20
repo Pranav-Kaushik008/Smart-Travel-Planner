@@ -45,10 +45,14 @@ const Navbar = ({ onToggleSidebar }) => {
               </span>
               <Link
                 to="/profile"
-                className="rounded-full bg-slate-200 dark:bg-slate-800 p-2.5 text-slate-600 dark:text-slate-300 hover:text-sky-500 transition-colors"
+                className="rounded-full bg-slate-200 dark:bg-slate-800 hover:border-sky-500 transition-all overflow-hidden w-9 h-9 flex items-center justify-center border-2 border-transparent"
                 title="Profile"
               >
-                <FaUser className="h-4 w-4" />
+                {user.profile_pic ? (
+                  <img src={user.profile_pic} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  <FaUser className="h-4 w-4 text-slate-600 dark:text-slate-300" />
+                )}
               </Link>
               <button
                 onClick={handleLogout}

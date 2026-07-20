@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -6,8 +6,12 @@ import WeatherCard from "../components/WeatherCard";
 import HotelCard from "../components/HotelCard";
 import BudgetBreakdown from "../components/BudgetBreakdown";
 import ItineraryTimeline from "../components/ItineraryTimeline";
+import RouteSummary from "../components/RouteSummary";
+import TransportTabs from "../components/TransportTabs";
+import AttractionCard from "../components/AttractionCard";
+import BookingButtons from "../components/BookingButtons";
 import { TRAVEL_TYPES, SEASONS, DESTINATION_COVERS } from "../utils/constants";
-import { FaPlane, FaCalendarCheck, FaMagic, FaFolderPlus, FaUndo } from "react-icons/fa";
+import { FaPlane, FaCalendarCheck, FaMagic, FaFolderPlus, FaUndo, FaMapMarkerAlt, FaCompass, FaSuitcase } from "react-icons/fa";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -21,14 +25,51 @@ const TravelPlanner = () => {
   const [travelType, setTravelType] = useState("");
   const [season, setSeason] = useState("");
 
+  // Location tracking
+  const [coords, setCoords] = useState({ lat: 12.9716, lng: 77.5946 }); // Default to Bengaluru
+  const [currentLocName, setCurrentLocName] = useState("Bengaluru, Karnataka");
+
   // Plan result states
   const [recommendation, setRecommendation] = useState(null);
   const [itinerary, setItinerary] = useState("");
-  
+
+  // Booking / Transport details states
+  const [route, setRoute] = useState(null);
+  const [flights, setFlights] = useState([]);
+  const [airportNote, setAirportNote] = useState(null);
+  const [trains, setTrains] = useState([]);
+  const [buses, setBuses] = useState([]);
+  const [attractions, setAttractions] = useState([]);
+
   // Loading states
   const [loadingRecommendation, setLoadingRecommendation] = useState(false);
   const [loadingItinerary, setLoadingItinerary] = useState(false);
   const [savingTrip, setSavingTrip] = useState(false);
+
+  const [loadingRoute, setLoadingRoute] = useState(false);
+  const [loadingFlights, setLoadingFlights] = useState(false);
+  const [loadingTrains, setLoadingTrains] = useState(false);
+  const [loadingBuses, setLoadingBuses] = useState(false);
+  const [loadingAttractions, setLoadingAttractions] = useState(false);
+
+  const [errors, setErrors] = useState({});
+
+  // Auto-detect location on mount
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setCoords({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+        },
+        (error) => {
+          console.warn("Geolocation access denied. Defaulting to Bengaluru.");
+        }
+      );
+    }
+  }, []);
 
   const handleGetRecommendation = async (e) => {
     e.preventDefault();
@@ -39,6 +80,13 @@ const TravelPlanner = () => {
 
     setRecommendation(null);
     setItinerary("");
+    setRoute(null);
+    setFlights([]);
+    setTrains([]);
+    setBuses([]);
+    setAttractions([]);
+    setErrors({});
+    
     setLoadingRecommendation(true);
 
     try {
@@ -49,13 +97,78 @@ const TravelPlanner = () => {
         season: season
       });
       setRecommendation(res.data);
-      toast.success("Destination found!");
+      toast.success("Destination recommendation ready!");
+      
+      // Trigger geocoded routing and travel lists in parallel
+      fetchTravelDetails(res.data.destination);
     } catch (err) {
       console.error("Error fetching recommendation", err);
       toast.error("Could not generate recommendation. Please try again.");
     } finally {
       setLoadingRecommendation(false);
     }
+  };
+
+  const fetchTravelDetails = async (destination) => {
+    setLoadingRoute(true);
+    setLoadingAttractions(true);
+    let resolvedOriginCity = "Bengaluru";
+    let calculatedDistance = 500.0;
+
+    // 1. Fetch Geocoded Directions first
+    try {
+      const routeRes = await api.get("/routes/directions", {
+        params: {
+          origin_lat: coords.lat,
+          origin_lng: coords.lng,
+          destination: destination
+        }
+      });
+      setRoute(routeRes.data);
+      resolvedOriginCity = routeRes.data.origin_city;
+      calculatedDistance = routeRes.data.distance_km;
+      setCurrentLocName(`${routeRes.data.origin_city}, ${routeRes.data.origin_state}`);
+    } catch (err) {
+      console.error("Routing error", err);
+      setErrors(prev => ({ ...prev, route: "Routing API failed" }));
+    } finally {
+      setLoadingRoute(false);
+    }
+
+    // 2. Fetch Flights, Trains, Buses and Attractions in parallel
+    setLoadingFlights(true);
+    api.get("/flights", {
+      params: { origin: resolvedOriginCity, destination: destination, budget: Number(budget) }
+    }).then(res => {
+      setFlights(res.data.flights);
+      setAirportNote(res.data.airport_note || null);
+    }).catch(err => {
+      setErrors(prev => ({ ...prev, flights: "Unable to find matching flight routes" }));
+    }).finally(() => setLoadingFlights(false));
+
+    setLoadingTrains(true);
+    api.get("/trains", {
+      params: { origin: resolvedOriginCity, destination: destination }
+    }).then(res => {
+      setTrains(res.data.trains);
+    }).catch(err => {
+      setErrors(prev => ({ ...prev, trains: "Unable to fetch direct train paths" }));
+    }).finally(() => setLoadingTrains(false));
+
+    setLoadingBuses(true);
+    api.get("/buses", {
+      params: { origin: resolvedOriginCity, destination: destination, distance_km: calculatedDistance }
+    }).then(res => {
+      setBuses(res.data.buses);
+    }).catch(err => {
+      setErrors(prev => ({ ...prev, buses: "Unable to fetch regional bus routes" }));
+    }).finally(() => setLoadingBuses(false));
+
+    api.get(`/attractions/${destination}`).then(res => {
+      setAttractions(res.data);
+    }).catch(err => {
+      console.error(err);
+    }).finally(() => setLoadingAttractions(false));
   };
 
   const handleGenerateItinerary = async () => {
@@ -116,6 +229,11 @@ const TravelPlanner = () => {
   const resetPlanner = () => {
     setRecommendation(null);
     setItinerary("");
+    setRoute(null);
+    setFlights([]);
+    setTrains([]);
+    setBuses([]);
+    setAttractions([]);
     setBudget("");
     setDays("");
     setTravelType("");
@@ -125,11 +243,19 @@ const TravelPlanner = () => {
   return (
     <div className="p-6 space-y-8 max-w-7xl mx-auto">
       {/* Header */}
-      <div>
-        <h2 className="text-2xl font-extrabold text-slate-800 dark:text-white">AI Travel Planner</h2>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Tell us your budget and timeframe; our recommendation engine does the rest.
-        </p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-extrabold text-slate-800 dark:text-white flex items-center gap-2">
+            <FaCompass className="text-sky-500 animate-spin-slow" /> AI Travel Booking Dashboard
+          </h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 pl-7">
+            Plan, compare pricing, and book your complete trip in one beautiful interface.
+          </p>
+        </div>
+        <div className="text-right bg-sky-500/10 border border-sky-500/20 px-4 py-2 rounded-2xl flex items-center gap-2 text-xs font-bold text-sky-600 dark:text-sky-400">
+          <FaMapMarkerAlt className="text-rose-500 animate-bounce" />
+          <span>Current Location: {currentLocName}</span>
+        </div>
       </div>
 
       {!recommendation && !loadingRecommendation && (
@@ -212,13 +338,14 @@ const TravelPlanner = () => {
       )}
 
       {loadingRecommendation && (
-        <LoadingSpinner size="lg" text="Analyzing destinations using RandomForest classifier model..." />
+        <LoadingSpinner size="lg" text="Searching destination matches using RandomForest model..." />
       )}
 
       {/* Plan Results Panel */}
       {recommendation && (
         <div className="space-y-8 animate-fadeIn">
-          {/* Hero Banner */}
+          
+          {/* Destination Hero Banner */}
           <div className="relative h-72 rounded-3xl overflow-hidden shadow-md flex items-end">
             <img
               src={DESTINATION_COVERS[recommendation.destination] || "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800"}
@@ -229,7 +356,7 @@ const TravelPlanner = () => {
             
             <div className="relative p-6 md:p-10 w-full flex flex-col md:flex-row md:items-end justify-between space-y-4 md:space-y-0 z-10">
               <div>
-                <span className="text-xs font-bold text-sky-400 uppercase tracking-widest bg-sky-500/10 px-3 py-1 rounded-full">
+                <span className="text-xs font-bold text-sky-400 uppercase tracking-widest bg-sky-500/10 px-3 py-1 rounded-full border border-sky-500/10">
                   Recommended Destination
                 </span>
                 <h1 className="text-4xl md:text-5xl font-extrabold text-white mt-3">
@@ -260,51 +387,88 @@ const TravelPlanner = () => {
             </div>
           </div>
 
+          {/* New Core Section: Directions & Transportation Availability */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Column: Weather and Budget */}
             <div className="lg:col-span-2 space-y-8">
+              {/* Route Geolocation summary */}
+              <RouteSummary route={route} />
+              
+              {/* Modern booking search switcher tabs */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                  <FaSuitcase className="text-indigo-500" /> Compare Ticketing Options
+                </h3>
+                <TransportTabs
+                  flights={flights}
+                  trains={trains}
+                  buses={buses}
+                  loadingFlights={loadingFlights}
+                  loadingTrains={loadingTrains}
+                  loadingBuses={loadingBuses}
+                  errors={errors}
+                  airportNote={airportNote}
+                />
+              </div>
+            </div>
+
+            {/* Right column: Weather card & Budget Breakdown */}
+            <div className="space-y-8">
               <WeatherCard destination={recommendation.destination} weather={recommendation.weather} />
               <BudgetBreakdown estimate={recommendation.budget_estimate} />
-            </div>
-
-            {/* Right Column: AI Itinerary trigger */}
-            <div className="glass-panel p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col justify-center text-center space-y-5">
-              <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center mx-auto text-indigo-500">
-                <FaMagic className="w-6 h-6 animate-pulse" />
-              </div>
-              <div>
-                <h3 className="font-bold text-slate-800 dark:text-white text-base">
-                  Generate AI Itinerary
-                </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-xs mx-auto leading-relaxed">
-                  Use Google Gemini to build a custom day-by-day vacation roadmap with restaurant reviews, local activities, and tips.
-                </p>
-              </div>
               
-              {!itinerary && !loadingItinerary && (
-                <button
-                  onClick={handleGenerateItinerary}
-                  className="w-full py-3 bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-600 hover:to-indigo-600 text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-indigo-500/15"
-                >
-                  Generate Day-Wise Plan
-                </button>
-              )}
-
-              {loadingItinerary && (
-                <div className="py-4">
-                  <div className="w-7 h-7 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-                  <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold">Creating calendar timeline...</span>
+              {/* AI Itinerary Trigger */}
+              <div className="glass-panel p-6 rounded-[28px] shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col justify-center text-center space-y-5">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center mx-auto text-indigo-500">
+                  <FaMagic className="w-6 h-6 animate-pulse" />
                 </div>
-              )}
-
-              {itinerary && (
-                <div className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 p-3 rounded-xl text-xs font-bold flex items-center justify-center space-x-1 border border-emerald-500/10">
-                  <FaCalendarCheck className="w-4 h-4" />
-                  <span>Itinerary Generated Successfully!</span>
+                <div>
+                  <h3 className="font-bold text-slate-800 dark:text-white text-base">
+                    Generate AI Itinerary
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-xs mx-auto leading-relaxed">
+                    Use Google Gemini to build a custom day-by-day vacation roadmap with restaurant reviews, local activities, and tips.
+                  </p>
                 </div>
-              )}
+                
+                {!itinerary && !loadingItinerary && (
+                  <button
+                    onClick={handleGenerateItinerary}
+                    className="w-full py-3 bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-600 hover:to-indigo-600 text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-indigo-500/15"
+                  >
+                    Generate Day-Wise Plan
+                  </button>
+                )}
+
+                {loadingItinerary && (
+                  <div className="py-4">
+                    <div className="w-7 h-7 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                    <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold">Creating calendar timeline...</span>
+                  </div>
+                )}
+
+                {itinerary && (
+                  <div className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 p-3 rounded-xl text-xs font-bold flex items-center justify-center space-x-1 border border-emerald-500/10">
+                    <FaCalendarCheck className="w-4 h-4" />
+                    <span>Itinerary Generated Successfully!</span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
+
+          {/* Local attractions grid */}
+          {attractions.length > 0 && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-bold text-slate-800 dark:text-white">
+                Top Sights in {recommendation.destination}
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {attractions.map((att, idx) => (
+                  <AttractionCard key={idx} attraction={att} />
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Timeline displays here once generated */}
           {itinerary && (
@@ -313,9 +477,12 @@ const TravelPlanner = () => {
 
           {/* Hotels recommendations */}
           <div className="space-y-4">
-            <h3 className="text-lg font-bold text-slate-800 dark:text-white">
-              Highly Rated Hotels in {recommendation.destination}
-            </h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-bold text-slate-800 dark:text-white">
+                Highly Rated Hotels in {recommendation.destination}
+              </h3>
+              <BookingButtons destination={recommendation.destination} type="hotels" />
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {recommendation.hotels.map((hotel) => (
                 <HotelCard key={hotel.id || hotel.name} hotel={hotel} />
