@@ -1,177 +1,170 @@
 # AI Smart Travel Planner
 
-AI Smart Travel Planner is a production-ready, containerized full-stack web application that leverages machine learning and generative AI to create custom, personalized holiday itineraries.
+AI Smart Travel Planner is a full-stack, container-friendly web application that combines machine learning recommendations and generative AI to help users plan personalized travel itineraries, compare transport options, and save trips.
 
-## 🚀 Tech Stack
+This README covers development, Docker deployment, configuration, and useful troubleshooting tips so you can run the project locally or in containers.
 
-- **Frontend**: React.js (Vite), Tailwind CSS v4, React Router DOM, Axios, Recharts
-- **Backend**: FastAPI (Python 3.12+), SQLAlchemy 2.0 (Async), Pydantic
-- **Database**: PostgreSQL (persisted via Docker volumes)
-- **Machine Learning**: Scikit-Learn Random Forest Classifier Recommendation Model
-- **AI Integrations**: OpenWeather API (real-time weather) & Google Gemini API (AI itinerary generation)
-- **Containerization**: Docker & Docker Compose
+**Repository:** [README.md](README.md#L1)
 
 ---
 
-## 📂 Project Structure
+**Highlights**
+- Destination recommendation using a Random Forest model
+- Google Gemini integration for AI-generated day-by-day itineraries (optional)
+- Real-time weather lookup, hotel suggestions, and transport comparisons
+- Full authentication, trip persistence, and profile management
+- Containerized with Docker Compose
 
-```
-Smart Travel Planner/
-├── backend/
-│   ├── data/
-│   │   └── destinations.csv     # 100+ destination records for ML model
-│   ├── database/
-│   │   ├── db.py                # Async engine & session setup
-│   │   └── seed.py              # Seeds 30+ default hotels
-│   ├── middleware/
-│   │   └── auth_middleware.py   # JWT user verification dependency
-│   ├── ml/
-│   │   ├── train.py             # Random Forest training script
-│   │   └── recommendation_model.pkl # Trained serialized model
-│   ├── models/
-│   │   ├── user.py              # SQLAlchemy user schemas
-│   │   ├── trip.py              # SQLAlchemy trip history schema
-│   │   └── hotel.py             # SQLAlchemy hotels schema
-│   ├── routes/
-│   │   ├── auth.py              # Registration, login, & self routes
-│   │   ├── planner.py           # ML recommendation & Gemini AI itinerary
-│   │   ├── weather.py           # Weather endpoint
-│   │   ├── trips.py             # Protected history routes
-│   │   ├── hotels.py            # Local hotel recommend
-│   │   ├── dashboard.py         # Stats & interactive Recharts summary data
-│   │   └── profile.py           # User detail updates
-│   ├── schemas/
-│   │   └── ...                  # Pydantic schemas for typed API payloads
-│   ├── services/
-│   │   ├── auth_service.py      # Password hashing & token signing
-│   │   ├── weather_service.py   # Async Weather client
-│   │   ├── gemini_service.py    # Google Gemini client (with offline fallback)
-│   │   ├── recommendation_service.py # Model loading & inference
-│   │   ├── budget_service.py    # Multiplier heuristic budget estimation
-│   │   └── hotel_service.py     # Hotel querying
-│   ├── main.py                  # App entrypoint, CORS configuration
-│   └── requirements.txt         # Backend Python packages
-├── frontend/
-│   ├── src/
-│   │   ├── api/
-│   │   │   └── axios.js         # API client with token interceptor
-│   │   ├── components/
-│   │   │   ├── ProtectedRoute.jsx # Route guarding checks
-│   │   │   ├── Navbar.jsx       # Header & theme switches
-│   │   │   ├── Sidebar.jsx      # Navigation sidebar
-│   │   │   ├── StatsCard.jsx    # Dashboard numbers
-│   │   │   ├── WeatherCard.jsx  # Weather details
-│   │   │   ├── HotelCard.jsx    # Ratings & pricing
-│   │   │   ├── BudgetBreakdown.jsx # Recharts Pie Chart visualizer
-│   │   │   └── ItineraryTimeline.jsx # Day-by-day roadmap
-│   │   ├── context/
-│   │   │   └── AuthContext.jsx  # Global login state manager
-│   │   ├── pages/
-│   │   │   ├── LandingPage.jsx  # Hero layout & features
-│   │   │   ├── LoginPage.jsx    # Login screen
-│   │   │   ├── RegisterPage.jsx # Registration form
-│   │   │   ├── Dashboard.jsx    # Recharts metrics
-│   │   │   ├── TravelPlanner.jsx # Preferences wizard & results
-│   │   │   ├── TripHistory.jsx  # Saved plans modal manager
-│   │   │   └── ProfilePage.jsx  # Settings editor
-│   │   ├── App.jsx              # Main routes setup
-│   │   ├── index.css            # Tailwind directive & animations
-│   │   └── main.jsx             # React entrypoint
-│   ├── package.json             # NPM dependencies
-│   └── vite.config.js           # Vite + Tailwind compilation rules
-├── docker-compose.yml           # Unified environment orchestration
-└── .env.example                 # Environment keys template
+---
+
+## Tech Stack
+
+- Frontend: React (Vite), Tailwind CSS, React Router, Axios
+- Backend: FastAPI, SQLAlchemy (async), Pydantic
+- Database: PostgreSQL (Docker volume)
+- ML: scikit-learn (train with `backend/ml/train.py`)
+- Dev tooling: Docker, docker-compose, uvicorn
+
+---
+
+## Files of Interest
+- `backend/` — FastAPI app, services, ML training, database models
+- `frontend/` — React app (Vite) and UI components
+- `docker-compose.yml` — Start DB, backend, and frontend together
+- `backend/requirements.txt` — Python dependencies
+- `frontend/package.json` — Frontend dependencies and scripts
+
+---
+
+## Quick Start (Docker, recommended)
+
+1. Copy the environment template and set keys in `.env` at the repo root:
+
+```bash
+copy .env.example .env
+# Edit .env and set values for:
+# OPENWEATHER_API_KEY, GEMINI_API_KEY (optional), JWT_SECRET_KEY
 ```
 
----
+2. Build and start everything:
 
-## 🛠️ Local Development Setup
+```bash
+docker-compose up --build -d
+```
 
-### Backend Setup
+3. Open the apps:
 
-1. Navigate to the backend folder:
-   ```bash
-   cd backend
-   ```
-2. Create and activate a virtual environment:
-   ```bash
-   python -m venv venv
-   # On Windows:
-   venv\Scripts\activate
-   # On macOS/Linux:
-   source venv/bin/activate
-   ```
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. Set up your `.env` file:
-   ```bash
-   copy .env.example .env
-   # Edit .env and paste your GEMINI_API_KEY
-   ```
-5. Retrain the machine learning model:
-   ```bash
-   python ml/train.py
-   ```
-6. Run the FastAPI development server:
-   ```bash
-   uvicorn main:app --reload --port 8000
-   ```
-   *The interactive API documentation is available at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).*
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8000
+- API docs: http://localhost:8000/docs
 
-### Frontend Setup
-
-1. Navigate to the frontend folder:
-   ```bash
-   cd ../frontend
-   ```
-2. Install npm packages:
-   ```bash
-   npm install
-   ```
-3. Run the development server:
-   ```bash
-   npm run dev
-   ```
-4. Visit the web app at [http://localhost:5173](http://localhost:5173).
+Note: The frontend container serves the static build on port 3000 per the Compose file.
 
 ---
 
-## 🐳 Docker Deployment (Production-Ready)
+## Local Development (Backend)
 
-Orchestrate the entire stack (PostgreSQL + FastAPI + React frontend) with a single command:
+1. Create a virtual environment and install dependencies:
 
-1. Create a `.env` file in the root directory:
-   ```bash
-   copy .env.example .env
-   # Edit .env and supply your GEMINI_API_KEY
-   ```
-2. Start the services:
-   ```bash
-   docker-compose up --build -d
-   ```
-3. Verify running containers:
-   ```bash
-   docker-compose ps
-   ```
-4. Access the applications:
-   - **Frontend**: [http://localhost:3000](http://localhost:3000)
-   - **Backend API**: [http://localhost:8000](http://localhost:8000)
-   - **API docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
+```bash
+cd backend
+python -m venv venv
+venv\Scripts\activate   # Windows
+# or: source venv/bin/activate  # macOS/Linux
+pip install -r requirements.txt
+```
+
+2. Create `.env` by copying `.env.example` and set required keys.
+
+3. (Optional) Train the ML model used for recommendations:
+
+```bash
+python ml/train.py
+```
+
+4. Run the backend app locally:
+
+```bash
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
+
+API docs (Swagger): http://127.0.0.1:8000/docs
 
 ---
 
-## 🔐 Key API Endpoints Reference
+## Local Development (Frontend)
 
-| Endpoint | Method | Authentication | Description |
-|---|---|---|---|
-| `/api/register` | `POST` | Public | Create new user, returns JWT token |
-| `/api/login` | `POST` | Public | Verify credentials, returns JWT token |
-| `/api/me` | `GET` | Protected | Fetch current logged-in user profile details |
-| `/api/recommend` | `POST` | Protected | Predict destination, returns weather + hotels + budget |
-| `/api/generate-itinerary`| `POST` | Protected | Generates Gemini AI day-wise itinerary roadmap |
-| `/api/save-trip` | `POST` | Protected | Saves all plan variables (ORM, injection-safe) |
-| `/api/trip-history` | `GET` | Protected | List saved plans by date |
-| `/api/dashboard/analytics`| `GET` | Protected | Aggregates monthly totals & expense breakdowns |
-| `/api/profile` | `PUT` | Protected | Edit user profile fields (email, full name) |
+1. Install dependencies and start Vite:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+2. Development proxy: Vite proxy forwards `/api` requests to `http://localhost:8000` (see `vite.config.js`).
+
+Visit the app at: http://localhost:5173
+
+---
+
+## Environment Variables
+
+Create a `.env` file with values for the variables below (this is an example — keys in your environment may vary):
+
+```
+DATABASE_URL=postgresql+asyncpg://postgres:password@db:5432/travelplanner
+OPENWEATHER_API_KEY=your_openweather_key
+GEMINI_API_KEY=your_gemini_key  # optional - used for AI itinerary
+JWT_SECRET_KEY=change_this_to_secure_value
+AVIATIONSTACK_API_KEY=optional_aviationstack_key
+OPENROUTE_API_KEY=optional_openrouteservice_key
+```
+
+Notes:
+- If you run with Docker Compose, the `DATABASE_URL` environment in the Compose file already points to the `db` service.
+- The app includes graceful fallbacks where external API keys are not provided.
+
+---
+
+## How the Flights booking links work
+
+- The backend maps cities to IATA codes and, for destinations without airports (e.g., Coorg), provides the nearest airport and distance.
+- Booking links ("Book Now") open Makemytrip using the resolved origin and destination IATA codes so users arrive at the nearest-airport search results (e.g. BLR → MYQ).
+
+---
+
+## Running Tests
+
+- Frontend tests (Vitest): `cd frontend && npm run test`
+- Backend: no automated tests included; you can run ad-hoc scripts or add pytest-based tests.
+
+---
+
+## Troubleshooting
+
+- Database connection issues: ensure Docker db is running or `DATABASE_URL` points to a valid Postgres instance.
+- Missing API keys: the app uses fallbacks for weather and Gemini where appropriate — log messages show which services failed.
+- Ports in use: backend defaults to 8000, frontend dev to 5173, frontend container to 3000 — adjust if needed.
+
+---
+
+## Contributing
+
+1. Fork the repository.
+2. Create a feature branch: `git checkout -b feat/my-change`
+3. Make changes, run local tests and linters.
+4. Open a pull request with a clear description.
+
+---
+
+## License & Attribution
+
+This project is provided as-is for development and educational purposes. Add a license file (e.g., MIT) if you intend to release it publicly.
+
+---
+
+If you want I can also:
+- add a `.env.example` file to the repo if it’s missing,
+- generate a short QuickStart script for Windows and macOS,
+- or update the frontend to display a clearer airport note only in the flights tab header.
