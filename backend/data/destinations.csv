@@ -6,7 +6,7 @@ Ooty,12000,3,Nature,Winter
 Jaipur,14000,4,Historical,Winter
 Mysore,9000,2,Historical,All
 Rishikesh,13000,3,Adventure,Winter
-Ladakh,25000,7,Adventure,Summer
+Ladakh,25000,7,Adventure,All
 Kerala,20000,5,Beach,Monsoon
 Andaman,30000,6,Beach,Summer
 Goa,22000,4,Beach,Winter
@@ -22,8 +22,8 @@ Jaipur,12000,3,Historical,All
 Mysore,15000,4,Historical,Summer
 Rishikesh,18000,5,Adventure,Summer
 Rishikesh,10000,2,Adventure,Winter
-Ladakh,35000,8,Adventure,Summer
-Ladakh,40000,10,Adventure,Summer
+Ladakh,35000,8,Adventure,All
+Ladakh,40000,10,Adventure,All
 Kerala,28000,6,Beach,Winter
 Kerala,18000,4,Nature,Monsoon
 Andaman,45000,7,Beach,Winter
@@ -56,7 +56,7 @@ Ooty,25000,6,Nature,Winter
 Jaipur,27000,6,Historical,Winter
 Mysore,18000,5,Historical,All
 Rishikesh,22000,6,Adventure,Winter
-Ladakh,48000,9,Adventure,Summer
+Ladakh,48000,9,Adventure,All
 Kerala,35000,7,Beach,Monsoon
 Andaman,50000,8,Beach,Summer
 Varanasi,15000,5,Religious,Winter
@@ -74,7 +74,7 @@ Ooty,13000,3,Nature,Summer
 Jaipur,15000,3,Historical,All
 Mysore,11000,3,Historical,All
 Rishikesh,14000,3,Adventure,Summer
-Ladakh,29000,6,Adventure,Summer
+Ladakh,29000,6,Adventure,All
 Kerala,22000,4,Beach,Monsoon
 Andaman,33000,5,Beach,Summer
 Varanasi,9000,3,Religious,Winter
@@ -92,7 +92,7 @@ Ooty,29000,7,Nature,Winter
 Jaipur,32000,7,Historical,Winter
 Mysore,22000,6,Historical,All
 Rishikesh,26000,7,Adventure,Winter
-Ladakh,52000,10,Adventure,Summer
+Ladakh,52000,10,Adventure,All
 Kerala,42000,8,Beach,Monsoon
 Andaman,58000,9,Beach,Summer
 Varanasi,18000,6,Religious,Winter
@@ -107,12 +107,25 @@ Ayodhya,5000,2,Religious,All
 Ayodhya,8000,3,Religious,All
 Ayodhya,12000,4,Religious,Winter
 Ayodhya,15000,5,Religious,All
-Ayodhya,7000,3,Religious,Summer
+Ayodhya,7000,3,Religious,All
 Ayodhya,10000,3,Religious,Winter
 Kedarnath,12000,3,Adventure,Summer
 Kedarnath,18000,5,Adventure,Summer
-Kedarnath,25000,6,Adventure,All
+Kedarnath,25000,6,Adventure,Summer
 Kedarnath,15000,4,Adventure,Summer
-Kedarnath,20000,4,Adventure,All
+Kedarnath,20000,4,Adventure,Summer
 Kedarnath,30000,7,Adventure,Summer
+Mangaluru,12000,3,Beach,All
+Mangaluru,18000,4,Beach,All
+Mangaluru,25000,5,Beach,All
+Munnar,15000,4,Nature,Monsoon
+Munnar,22000,5,Nature,Monsoon
+Munnar,28000,6,Nature,Monsoon
+Kolad,8000,2,Adventure,Monsoon
+Kolad,14000,3,Adventure,Monsoon
+Kolad,20000,4,Adventure,Monsoon
+Nagarhole,18000,3,Wildlife,All
+Nagarhole,28000,4,Wildlife,All
+Nagarhole,35000,5,Wildlife,All
+
 

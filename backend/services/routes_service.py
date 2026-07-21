@@ -17,6 +17,8 @@ DESTINATION_COORDS = {
     "Bengaluru": (12.9716, 77.5946), "Chennai": (13.0827, 80.2707),
     "Kolkata": (22.5726, 88.3639), "Hyderabad": (17.3850, 78.4867),
     "Pune": (18.5204, 73.8567), "Ahmedabad": (23.0225, 72.5714),
+    "Mangaluru": (12.9141, 74.8560), "Munnar": (10.0889, 77.0595),
+    "Kolad": (18.4239, 73.2205), "Nagarhole": (11.9967, 76.1264),
 }
 
 async def get_route_info(origin_lat: float, origin_lng: float, destination: str) -> dict:

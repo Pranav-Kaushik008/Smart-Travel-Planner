@@ -42,30 +42,65 @@ class RecommendationEngine:
             print(f"Error loading recommendation model: {e}. Fallback engine will be used.")
             
     def predict(self, budget: float, days: int, travel_type: str, season: str) -> str:
-        # Standard fallback recommendations
+        # Normalize travel_type string
+        if travel_type in ["Religious", "Spiritual & Religious", "Spiritual"]:
+            norm_type = "Religious"
+        else:
+            norm_type = travel_type
+
+        # Standard fallback recommendations for all 24 Travel Style x Season combinations
         fallbacks = {
+            # Beach Vacation
             ("Beach", "Summer"): "Goa",
             ("Beach", "Winter"): "Andaman",
             ("Beach", "Monsoon"): "Kerala",
-            ("Mountain", "Winter"): "Manali",
-            ("Mountain", "Summer"): "Ladakh",
-            ("Nature", "Monsoon"): "Coorg",
-            ("Nature", "Winter"): "Ooty",
-            ("Adventure", "Summer"): "Ladakh",
+            ("Beach", "All"): "Mangaluru",
+
+            # Adventure & Trekking
+            ("Adventure", "Summer"): "Kedarnath",
             ("Adventure", "Winter"): "Rishikesh",
+            ("Adventure", "Monsoon"): "Kolad",
+            ("Adventure", "All"): "Ladakh",
+
+            # Historical & Heritage
+            ("Historical", "Summer"): "Udaipur",
             ("Historical", "Winter"): "Jaipur",
+            ("Historical", "Monsoon"): "Hampi",
             ("Historical", "All"): "Mysore",
-            ("Wildlife", "Winter"): "Jim Corbett",
+
+            # Nature & Scenic
+            ("Nature", "Summer"): "Shimla",
+            ("Nature", "Winter"): "Ooty",
+            ("Nature", "Monsoon"): "Munnar",
+            ("Nature", "All"): "Coorg",
+
+            # Wildlife & Safari
+            ("Wildlife", "Summer"): "Jim Corbett",
+            ("Wildlife", "Winter"): "Sundarbans",
             ("Wildlife", "Monsoon"): "Kaziranga",
+            ("Wildlife", "All"): "Nagarhole",
+
+            # Spiritual & Religious
+            ("Religious", "Summer"): "Kedarnath",
+            ("Religious", "Winter"): "Varanasi",
+            ("Religious", "Monsoon"): "Tirupati",
+            ("Religious", "All"): "Ayodhya",
+
+            # Alias mappings for Spiritual & Religious
             ("Spiritual & Religious", "Summer"): "Kedarnath",
+            ("Spiritual & Religious", "Winter"): "Varanasi",
             ("Spiritual & Religious", "Monsoon"): "Tirupati",
             ("Spiritual & Religious", "All"): "Ayodhya",
-            ("Spiritual & Religious", "Winter"): "Varanasi"
-                    
         }
         
         default_fallback = "Goa"
         
+        # Direct explicit rule matching
+        if (norm_type, season) in fallbacks:
+            return fallbacks[(norm_type, season)]
+        if (travel_type, season) in fallbacks:
+            return fallbacks[(travel_type, season)]
+
         if not self.model_loaded:
             return fallbacks.get((travel_type, season), fallbacks.get((travel_type, "Summer"), default_fallback))
             

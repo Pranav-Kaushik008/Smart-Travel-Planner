@@ -95,3 +95,11 @@ async def delete_trip(trip_id: int, db: AsyncSession = Depends(get_db), current_
     await db.delete(trip)
     await db.commit()
     return None
+
+@router.delete("/clear-trip-history", status_code=status.HTTP_204_NO_CONTENT)
+async def clear_all_trips(db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
+    from sqlalchemy import delete
+    stmt = delete(Trip).where(Trip.user_id == current_user.id)
+    await db.execute(stmt)
+    await db.commit()
+    return None

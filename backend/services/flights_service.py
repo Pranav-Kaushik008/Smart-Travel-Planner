@@ -1,5 +1,6 @@
 import httpx
 import random
+from datetime import datetime, timedelta
 from config import settings
 
 # IATA codes for popular Indian cities
@@ -7,6 +8,7 @@ CITY_IATA = {
     "Goa": "GOI",
     "Jaipur": "JAI",
     "Kochi": "COK",
+    "Cochin": "COK",
     "Kerala": "COK",
     "Varanasi": "VNS",
     "Ladakh": "IXL",
@@ -19,16 +21,34 @@ CITY_IATA = {
     "Mumbai": "BOM",
     "Delhi": "DEL",
     "Bengaluru": "BLR",
+    "Bangalore": "BLR",
     "Chennai": "MAA",
     "Kolkata": "CCU",
     "Hyderabad": "HYD",
     "Pune": "PNQ",
     "Ahmedabad": "AMD",
     "Kaziranga": "JRH",
+    "Mangaluru": "IXE",
+    "Mangalore": "IXE",
 }
 
 # Destinations that don't have their own airport — mapped to nearest airport city
 NEAREST_AIRPORT = {
+    "Munnar": {
+        "airport": "COK",
+        "city": "Cochin International Airport",
+        "distance": "110 km from Munnar",
+    },
+    "Kolad": {
+        "airport": "BOM",
+        "city": "Mumbai (Chhatrapati Shivaji Maharaj)",
+        "distance": "115 km from Kolad",
+    },
+    "Nagarhole": {
+        "airport": "MYQ",
+        "city": "Mysore (Mandakalli)",
+        "distance": "95 km from Nagarhole",
+    },
     "Coorg": {
         "airport": "MYQ",
         "city": "Mysore (Mandakalli)",
@@ -79,21 +99,24 @@ AIRLINE_LOGOS = {
 
 
 def _build_booking_url(
-    origin_iata: str, dest_iata: str, origin_city: str, dest_city: str, date: str = None
+    origin_iata: str, dest_iata: str, date: str = None
 ) -> str:
-    origin_slug = origin_city.lower().replace(" ", "-")
-    dest_slug = dest_city.lower().replace(" ", "-")
-    if origin_iata and dest_iata:
-        if date:
-            return (
-                f"https://www.makemytrip.com/flights?tripType=O&fromCity={origin_iata}&toCity={dest_iata}"
-                f"&depDate={date}&adult=1&child=0&infant=0&cabinClass=E"
-            )
-        return (
-            f"https://www.makemytrip.com/flights?tripType=O&fromCity={origin_iata}&toCity={dest_iata}"
-            f"&adult=1&child=0&infant=0&cabinClass=E"
-        )
-    return f"https://www.makemytrip.com/flights/{origin_slug}-{dest_slug}-flights/"
+    from datetime import datetime, timedelta
+    formatted_date = "15/08/2026"
+    if date:
+        try:
+            dt = datetime.strptime(date, "%Y-%m-%d")
+            formatted_date = dt.strftime("%d/%m/%Y")
+        except Exception:
+            try:
+                dt = datetime.strptime(date, "%d/%m/%Y")
+                formatted_date = dt.strftime("%d/%m/%Y")
+            except Exception:
+                pass
+    else:
+        formatted_date = (datetime.now() + timedelta(days=15)).strftime("%d/%m/%Y")
+    
+    return f"https://www.makemytrip.com/flight/search?tripType=O&itinerary={origin_iata}-{dest_iata}-{formatted_date}&paxType=A-1_C-0_I-0&intl=false&cabinClass=E&lang=eng"
 
 
 async def search_flights(
@@ -184,8 +207,11 @@ async def search_flights(
                                 "currency": "INR",
                                 "logo_url": logo_url,
                                 "booking_url": _build_booking_url(
-                                    origin_iata, dest_iata, origin_city, dest_city, date
+                                    origin_iata, dest_iata, date
                                 ),
+                                "origin_iata": origin_iata,
+                                "dest_iata": dest_iata,
+                                "date": date or (datetime.now() + timedelta(days=15)).strftime("%Y-%m-%d"),
                             }
                         )
 
@@ -259,8 +285,11 @@ def _generate_mock_flights(
                 "currency": "INR",
                 "logo_url": airline["logo"],
                 "booking_url": _build_booking_url(
-                    origin_iata, dest_iata, origin, dest, date
+                    origin_iata, dest_iata, date
                 ),
+                "origin_iata": origin_iata,
+                "dest_iata": dest_iata,
+                "date": date or (datetime.now() + timedelta(days=15)).strftime("%Y-%m-%d"),
             }
         )
 

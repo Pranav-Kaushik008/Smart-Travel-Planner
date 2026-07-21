@@ -5,7 +5,7 @@ import TripCard from "../components/TripCard";
 import WeatherCard from "../components/WeatherCard";
 import BudgetBreakdown from "../components/BudgetBreakdown";
 import ItineraryTimeline from "../components/ItineraryTimeline";
-import { FaHistory, FaTimes, FaWallet, FaCheckCircle, FaReceipt, FaPen } from "react-icons/fa";
+import { FaHistory, FaTimes, FaWallet, FaCheckCircle, FaReceipt, FaPen, FaTrash } from "react-icons/fa";
 import toast from "react-hot-toast";
 
 const EXPENSE_FIELDS = [
@@ -53,6 +53,20 @@ const TripHistory = () => {
     } catch (err) {
       console.error("Error deleting trip", err);
       toast.error("Failed to delete trip");
+    }
+  };
+
+  const handleClearAllTrips = async () => {
+    if (!window.confirm("Are you sure you want to clear your ENTIRE trip history? This cannot be undone.")) return;
+
+    try {
+      await api.delete("/clear-trip-history");
+      toast.success("Trip history cleared successfully");
+      setTrips([]);
+      setSelectedTrip(null);
+    } catch (err) {
+      console.error("Error clearing trip history", err);
+      toast.error("Failed to clear trip history");
     }
   };
 
@@ -129,21 +143,33 @@ const TripHistory = () => {
           </p>
         </div>
 
-        {/* Grand Total Expense Badge */}
-        {grandTotalActual > 0 && (
-          <div className="flex items-center gap-3 bg-gradient-to-r from-emerald-500/10 to-sky-500/10 border border-emerald-500/20 rounded-2xl px-5 py-3.5 shadow-sm">
-            <div className="p-2 bg-emerald-500/15 rounded-xl">
-              <FaWallet className="text-emerald-500 text-lg" />
-            </div>
-            <div>
-              <div className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Total Actual Spent</div>
-              <div className="text-xl font-black text-emerald-600 dark:text-emerald-400">
-                ₹{grandTotalActual.toLocaleString("en-IN")}
+        {/* Right Header Actions */}
+        <div className="flex flex-wrap items-center gap-3">
+          {trips.length > 0 && (
+            <button
+              onClick={handleClearAllTrips}
+              className="px-4 py-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-bold rounded-2xl transition-all border border-rose-500/20 flex items-center gap-1.5 shadow-xs"
+            >
+              <FaTrash className="text-xs" /> Clear All History
+            </button>
+          )}
+
+          {/* Grand Total Expense Badge */}
+          {grandTotalActual > 0 && (
+            <div className="flex items-center gap-3 bg-gradient-to-r from-emerald-500/10 to-sky-500/10 border border-emerald-500/20 rounded-2xl px-5 py-3.5 shadow-sm">
+              <div className="p-2 bg-emerald-500/15 rounded-xl">
+                <FaWallet className="text-emerald-500 text-lg" />
               </div>
-              <div className="text-[10px] text-slate-400 font-semibold">{tripsWithExpenses} of {trips.length} trips logged</div>
+              <div>
+                <div className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Total Actual Spent</div>
+                <div className="text-xl font-black text-emerald-600 dark:text-emerald-400">
+                  ₹{grandTotalActual.toLocaleString("en-IN")}
+                </div>
+                <div className="text-[10px] text-slate-400 font-semibold">{tripsWithExpenses} of {trips.length} trips logged</div>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {trips.length === 0 ? (

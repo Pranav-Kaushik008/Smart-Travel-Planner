@@ -38,7 +38,9 @@ const TravelPlanner = () => {
   const [flights, setFlights] = useState([]);
   const [airportNote, setAirportNote] = useState(null);
   const [trains, setTrains] = useState([]);
+  const [trainTransitNote, setTrainTransitNote] = useState(null);
   const [buses, setBuses] = useState([]);
+  const [busTransitNote, setBusTransitNote] = useState(null);
   const [attractions, setAttractions] = useState([]);
 
   // Loading states
@@ -82,8 +84,11 @@ const TravelPlanner = () => {
     setItinerary("");
     setRoute(null);
     setFlights([]);
+    setAirportNote(null);
     setTrains([]);
+    setTrainTransitNote(null);
     setBuses([]);
+    setBusTransitNote(null);
     setAttractions([]);
     setErrors({});
     
@@ -151,6 +156,7 @@ const TravelPlanner = () => {
       params: { origin: resolvedOriginCity, destination: destination }
     }).then(res => {
       setTrains(res.data.trains);
+      setTrainTransitNote(res.data.transit_note || null);
     }).catch(err => {
       setErrors(prev => ({ ...prev, trains: "Unable to fetch direct train paths" }));
     }).finally(() => setLoadingTrains(false));
@@ -160,6 +166,7 @@ const TravelPlanner = () => {
       params: { origin: resolvedOriginCity, destination: destination, distance_km: calculatedDistance }
     }).then(res => {
       setBuses(res.data.buses);
+      setBusTransitNote(res.data.transit_note || null);
     }).catch(err => {
       setErrors(prev => ({ ...prev, buses: "Unable to fetch regional bus routes" }));
     }).finally(() => setLoadingBuses(false));
@@ -231,8 +238,11 @@ const TravelPlanner = () => {
     setItinerary("");
     setRoute(null);
     setFlights([]);
+    setAirportNote(null);
     setTrains([]);
+    setTrainTransitNote(null);
     setBuses([]);
+    setBusTransitNote(null);
     setAttractions([]);
     setBudget("");
     setDays("");
@@ -407,6 +417,8 @@ const TravelPlanner = () => {
                   loadingBuses={loadingBuses}
                   errors={errors}
                   airportNote={airportNote}
+                  trainTransitNote={trainTransitNote}
+                  busTransitNote={busTransitNote}
                 />
               </div>
             </div>

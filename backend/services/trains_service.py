@@ -15,9 +15,28 @@ TRAINS_DATA = {
     ]
 }
 
+TRAIN_TRANSIT_NOTES = {
+    "Munnar": "Munnar has no railway station. Trains are routed to Aluva (AWY) or Ernakulam Junction (ERS), located approx. 110 km (3.5 hours by road) from Munnar.",
+    "Kolad": "Kolad has a local Konkan Railway station (KOL). Major express train routes connect via Roha Junction (ROHA), located 12 km from Kolad.",
+    "Nagarhole": "Nagarhole National Park has no railway station. Trains are routed to Mysore Junction (MYS), located 90 km (approx. 2 hours by road) away.",
+    "Coorg": "Coorg has no direct railway station. Trains are routed to Mysore Junction (MYS), located 120 km (approx. 2.5 hours by taxi/bus) from Coorg.",
+    "Manali": "Manali has no direct railway station. Trains are routed to Una Himachal (UNA) or Chandigarh (CDG). A local bus/taxi is required to reach Manali (5-8 hours).",
+    "Ooty": "Ooty is connected via a scenic Toy Train from Mettupalayam (MTP). Major railway connections route to Coimbatore Junction (CBE), 88 km away.",
+    "Kedarnath": "Kedarnath has no railway station. Trains are routed to Rishikesh (RKSH) or Haridwar (HW), followed by a 210 km road trip to Sonprayag and a 16 km mountain trek.",
+    "Ladakh": "Ladakh has no railway connectivity. Nearest major railhead is Jammu Tawi (JAT), located 680 km away, requiring a 2-day road journey.",
+    "Andaman": "Andaman Islands are only accessible by flight or ship. There is no railway network available.",
+    "Jim Corbett": "The nearest railway station is Ramnagar (RMR), located 12 km from Jim Corbett National Park. Express trains link directly to Delhi.",
+    "Rishikesh": "Rishikesh station (RKSH) has limited train connectivity. Haridwar Junction (HW), 25 km away, offers better country-wide connections."
+}
+
 async def search_trains(origin_city: str, dest_city: str) -> dict:
     """Search trains via IRCTC RapidAPI with fallback to realistic mock data."""
-    
+    transit_note = None
+    for k, v in TRAIN_TRANSIT_NOTES.items():
+        if k.lower() in dest_city.lower():
+            transit_note = v
+            break
+
     # Try IRCTC RapidAPI
     if settings.RAPIDAPI_KEY:
         try:
@@ -45,12 +64,12 @@ async def search_trains(origin_city: str, dest_city: str) -> dict:
                             "booking_url": f"https://www.irctc.co.in/nget/train-search"
                         })
                     if trains:
-                        return {"trains": trains, "source": "irctc"}
+                        return {"trains": trains, "source": "irctc", "transit_note": transit_note}
         except Exception:
             pass
     
     # Fallback: Generate realistic trains
-    return {"trains": _generate_mock_trains(origin_city, dest_city), "source": "fallback"}
+    return {"trains": _generate_mock_trains(origin_city, dest_city), "source": "fallback", "transit_note": transit_note}
 
 def _generate_mock_trains(origin: str, dest: str) -> list:
     trains = []
@@ -81,6 +100,7 @@ STATION_CODES = {
     "Mumbai": "CSTM", "Delhi": "NDLS", "Bengaluru": "SBC", "Chennai": "MAS",
     "Kolkata": "HWH", "Hyderabad": "SC", "Pune": "PUNE", "Ahmedabad": "ADI",
     "Coorg": "MYS", "Hampi": "HPT", "Jim Corbett": "RMR", "Andaman": "MAS",
+    "Mangaluru": "MAJN", "Mangalore": "MAJN", "Munnar": "AWY", "Kolad": "ROHA", "Nagarhole": "MYS",
 }
 
 def _get_station(city: str) -> str:

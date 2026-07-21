@@ -48,21 +48,15 @@ const TrainCard = ({ train }) => {
           </div>
         </div>
 
-        {/* Right: Fare & Book */}
-        <div className="text-right sm:border-l sm:border-slate-150 sm:dark:border-slate-850 sm:pl-4 min-w-[110px] w-full sm:w-auto flex sm:block items-center justify-between sm:justify-end">
-          <div className="sm:mb-1 text-left sm:text-right">
-            <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Fare starting from</div>
-            <div className="text-lg font-black text-slate-900 dark:text-white">
-              ₹{fare.toLocaleString("en-IN")}
-            </div>
-          </div>
+        {/* Right: Book CTA */}
+        <div className="border-t sm:border-t-0 sm:border-l border-slate-100 dark:border-slate-800 pt-3 sm:pt-0 sm:pl-4 min-w-[130px] w-full sm:w-auto flex items-center justify-end shrink-0">
           <a
             href={booking_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-indigo-500/10 flex items-center gap-1.5"
+            className="w-full sm:w-auto px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-indigo-500/10 flex items-center justify-center gap-1.5"
           >
-            <FaCalendarAlt className="text-[10px]" /> Book on IRCTC
+            <FaCalendarAlt className="text-[10px]" /> Book on IRCTC <FaExternalLinkAlt className="text-[8px]" />
           </a>
         </div>
       </div>

@@ -20,6 +20,9 @@ class FlightOffer(BaseModel):
     currency: str = "INR"
     logo_url: Optional[str] = None
     booking_url: str
+    origin_iata: Optional[str] = None
+    dest_iata: Optional[str] = None
+    date: Optional[str] = None
 
 class FlightSearchResponse(BaseModel):
     flights: List[FlightOffer]
@@ -39,6 +42,7 @@ class TrainOffer(BaseModel):
 class TrainSearchResponse(BaseModel):
     trains: List[TrainOffer]
     source: str = "fallback"
+    transit_note: Optional[str] = None
 
 class BusOffer(BaseModel):
     operator: str
@@ -55,6 +59,7 @@ class BusOffer(BaseModel):
 class BusSearchResponse(BaseModel):
     buses: List[BusOffer]
     source: str = "fallback"
+    transit_note: Optional[str] = None
 
 class AttractionItem(BaseModel):
     name: str

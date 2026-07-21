@@ -24,9 +24,21 @@ def _clean_city_redbus(city: str) -> str:
         return "cochin"
     return c.replace(" ", "-")
 
+BUS_TRANSIT_NOTES = {
+    "Kedarnath": "Kedarnath has no motorable road connection. Buses will take you to Sonprayag/Gaurikund hub. From there, you must complete the journey via a 16 km mountain trek, mule, or helicopter.",
+    "Andaman": "Andaman Islands have no interstate bus connectivity from the Indian mainland. Local buses are available only for travel within Port Blair and Havelock Island.",
+    "Ladakh": "Direct bus routes to Leh (Ladakh) are highly seasonal and only operate during summer (June to September) via the Manali-Leh or Srinagar-Leh highways.",
+}
+
 def search_buses(origin_city: str, dest_city: str, distance_km: float = 500.0) -> dict:
     """Generate realistic RedBus-style bus search results based on distance."""
     buses = []
+    
+    transit_note = None
+    for k, v in BUS_TRANSIT_NOTES.items():
+        if k.lower() in dest_city.lower():
+            transit_note = v
+            break
     
     dep_times = ["07:30", "09:00", "13:15", "18:30", "20:00", "21:30", "22:45"]
     arr_times = ["17:30", "19:00", "23:00", "04:30", "06:00", "07:30", "08:45"]
@@ -78,4 +90,4 @@ def search_buses(origin_city: str, dest_city: str, distance_km: float = 500.0) -
         })
         
     buses.sort(key=lambda x: x["price"])
-    return {"buses": buses, "source": "fallback"}
+    return {"buses": buses, "source": "fallback", "transit_note": transit_note}
