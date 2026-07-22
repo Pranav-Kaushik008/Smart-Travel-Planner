@@ -19,6 +19,26 @@ ATTRACTIONS_DATA = {
             "category": "Historical"
         }
     ],
+    "Sundarbans": [
+        {
+            "name": "Sundarbans National Park & Tiger Reserve",
+            "description": "UNESCO World Heritage Site and world's largest mangrove forest, famous for the Royal Bengal Tiger.",
+            "image_url": "https://images.unsplash.com/photo-1546964124-0cce460f38ef?w=600",
+            "category": "Wildlife"
+        },
+        {
+            "name": "Sajnekhali Watch Tower & Bird Sanctuary",
+            "description": "Prime birdwatching hub overlooking the delta, featuring a mangrove interpretation center and crocodile pond.",
+            "image_url": "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600",
+            "category": "Nature"
+        },
+        {
+            "name": "Sudhanyakhali Watch Tower",
+            "description": "One of the best watchtowers to spot Royal Bengal tigers, axis deer, and wild boars drinking at freshwater ponds.",
+            "image_url": "https://images.unsplash.com/photo-1579621970795-87faff3f900a?w=600",
+            "category": "Wildlife"
+        }
+    ],
     "Jaipur": [
         {
             "name": "Hawa Mahal",
@@ -63,7 +83,7 @@ ATTRACTIONS_DATA = {
         {
             "name": "Kedarnath Temple",
             "description": "One of the most sacred Hindu temples dedicated to Lord Shiva, set against majestic snow-capped peaks at 3,583m.",
-            "image_url": "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=600",
+            "image_url": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600",
             "category": "Temple"
         },
         {

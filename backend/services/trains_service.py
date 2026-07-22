@@ -19,6 +19,7 @@ TRAIN_TRANSIT_NOTES = {
     "Munnar": "Munnar has no railway station. Trains are routed to Aluva (AWY) or Ernakulam Junction (ERS), located approx. 110 km (3.5 hours by road) from Munnar.",
     "Kolad": "Kolad has a local Konkan Railway station (KOL). Major express train routes connect via Roha Junction (ROHA), located 12 km from Kolad.",
     "Nagarhole": "Nagarhole National Park has no railway station. Trains are routed to Mysore Junction (MYS), located 90 km (approx. 2 hours by road) away.",
+    "Sundarbans": "Sundarbans National Park has no direct railway station. Trains route to Sealdah/Howrah (HWH/SDAH) or Canning (CG) station, followed by a 3-hour boat journey from Godkhali Port.",
     "Coorg": "Coorg has no direct railway station. Trains are routed to Mysore Junction (MYS), located 120 km (approx. 2.5 hours by taxi/bus) from Coorg.",
     "Manali": "Manali has no direct railway station. Trains are routed to Una Himachal (UNA) or Chandigarh (CDG). A local bus/taxi is required to reach Manali (5-8 hours).",
     "Ooty": "Ooty is connected via a scenic Toy Train from Mettupalayam (MTP). Major railway connections route to Coimbatore Junction (CBE), 88 km away.",
@@ -100,7 +101,7 @@ STATION_CODES = {
     "Mumbai": "CSTM", "Delhi": "NDLS", "Bengaluru": "SBC", "Chennai": "MAS",
     "Kolkata": "HWH", "Hyderabad": "SC", "Pune": "PUNE", "Ahmedabad": "ADI",
     "Coorg": "MYS", "Hampi": "HPT", "Jim Corbett": "RMR", "Andaman": "MAS",
-    "Mangaluru": "MAJN", "Mangalore": "MAJN", "Munnar": "AWY", "Kolad": "ROHA", "Nagarhole": "MYS",
+    "Mangaluru": "MAJN", "Mangalore": "MAJN", "Munnar": "AWY", "Kolad": "ROHA", "Nagarhole": "MYS", "Sundarbans": "HWH",
 }
 
 def _get_station(city: str) -> str:

@@ -28,6 +28,7 @@ BUS_TRANSIT_NOTES = {
     "Kedarnath": "Kedarnath has no motorable road connection. Buses will take you to Sonprayag/Gaurikund hub. From there, you must complete the journey via a 16 km mountain trek, mule, or helicopter.",
     "Andaman": "Andaman Islands have no interstate bus connectivity from the Indian mainland. Local buses are available only for travel within Port Blair and Havelock Island.",
     "Ladakh": "Direct bus routes to Leh (Ladakh) are highly seasonal and only operate during summer (June to September) via the Manali-Leh or Srinagar-Leh highways.",
+    "Sundarbans": "Buses will take you to Kolkata (Esplanade/Babu Ghat) or Canning/Godkhali ferry terminal. From Godkhali, you must board a motorized ferry boat into the Sundarbans mangrove islands.",
 }
 
 def search_buses(origin_city: str, dest_city: str, distance_km: float = 500.0) -> dict:

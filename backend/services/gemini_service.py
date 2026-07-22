@@ -5,136 +5,175 @@ import json
 def get_mock_itinerary(destination: str, days: int, travel_type: str) -> str:
     # Heuristic mock generator for local dev when no Gemini key is provided
     itinerary = f"### AI Travel Itinerary: {days} Days in {destination} ({travel_type})\n\n"
-    itinerary += "*(Note: This is a simulated itinerary. Configure a valid GEMINI_API_KEY for custom AI planning.)*\n\n"
     
     attractions = {
-        "Goa": ["Calangute Beach", "Fort Aguada", "Basilica of Bom Jesus", "Anjuna Flea Market", "Dudhsagar Falls", "Panaji Latin Quarter"],
-        "Manali": ["Hadimba Temple", "Solang Valley", "Rohtang Pass", "Jogini Waterfalls", "Old Manali Cafes", "Mall Road"],
-        "Ladakh": ["Pangong Lake", "Nubra Valley", "Khardung La", "Shanti Stupa", "Magnetic Hill", "Leh Palace"],
-        "Kerala": ["Munnar Tea Gardens", "Alleppey Houseboat Cruise", "Wayanad Forests", "Kochi Fort", "Varkala Beach", "Thekkady Wildlife Sanctuary"],
-        "Andaman": ["Radhanagar Beach", "Cellular Jail", "Havelock Island Snorkeling", "Baratang Caves", "Ross Island", "Chidiya Tapu"],
-        "Jaipur": ["Amber Fort", "Hawa Mahal", "City Palace", "Jantar Mantar", "Chokhi Dhani", "Nahargarh Fort"],
-        "Varanasi": ["Kashi Vishwanath Temple", "Dashashwamedh Ghat", "Sarnath", "Assi Ghat", "Ganga Aarti", "Banarasi Saree Market"],
-        "Rishikesh": ["Laxman Jhula", "Triveni Ghat", "Parmarth Niketan", "Neer Garh Waterfall", "Beatles Ashram", "Shivpuri Rafting"],
-        "Coorg": ["Abbey Falls", "Raja's Seat", "Dubare Elephant Camp", "Tala Kaveri", "Golden Temple (Bylakuppe)", "Mandalpatti Peak"],
-        "Ooty": ["Ooty Botanical Gardens", "Doddabetta Peak", "Ooty Lake", "Rose Garden", "Toy Train Ride", "Pykara Waterfalls"],
-        "Tirupati": [
-        "Sri Venkateswara Temple",
-        "Akasa Ganga",
-        "Silathoranam",
-        "Kapila Theertham",
-        "Sri Padmavathi Temple",
-        "Japali Hanuman Temple"
+        "Goa": [
+            "Baga Beach & Water Sports", "Fort Aguada & Lighthouse", "Basilica of Bom Jesus", 
+            "Anjuna Flea Market & Sunset", "Dudhsagar Waterfalls Trek", "Panaji Latin Quarter (Fontainhas)"
         ],
-
-    "Haridwar": [
-        "Har Ki Pauri",
-        "Mansa Devi Temple",
-        "Chandi Devi Temple",
-        "Bharat Mata Mandir",
-        "Daksha Mahadev Temple",
-        "Evening Ganga Aarti"
-    ],
-
-    "Ayodhya": [
-        "Ram Mandir",
-        "Hanuman Garhi",
-        "Kanak Bhawan",
-        "Ram Ki Paidi",
-        "Saryu River Ghat",
-        "Nageshwarnath Temple"
-    ],
-
-    "Ujjain": [
-        "Mahakaleshwar Jyotirlinga",
-        "Kal Bhairav Temple",
-        "Harsiddhi Temple",
-        "Ram Ghat",
-        "Mangalnath Temple",
-        "Sandipani Ashram"
-    ],
-
-    "Puri": [
-        "Jagannath Temple",
-        "Golden Beach",
-        "Gundicha Temple",
-        "Konark Sun Temple",
-        "Chilika Lake",
-        "Narendra Tank"
-    ],
-
-    "Rameswaram": [
-        "Ramanathaswamy Temple",
-        "Agni Theertham",
-        "Dhanushkodi",
-        "Pamban Bridge",
-        "Kothandaramaswamy Temple",
-        "Five Faced Hanuman Temple"
-    ],
-
-    "Kedarnath": [
-        "Kedarnath Temple",
-        "Bhairavnath Temple",
-        "Vasuki Tal",
-        "Adi Shankaracharya Samadhi",
-        "Gandhi Sarovar",
-        "Chorabari Tal"
-    ],
-
-    "Badrinath": [
-        "Badrinath Temple",
-        "Tapt Kund",
-        "Mana Village",
-        "Vyas Gufa",
-        "Bheem Pul",
-        "Charan Paduka"
-    ],
-
-    "Amritsar": [
-        "Golden Temple",
-        "Akal Takht",
-        "Jallianwala Bagh",
-        "Wagah Border",
-        "Durgiana Temple",
-        "Partition Museum"
-    ],
-
-    "Madurai": [
-        "Meenakshi Amman Temple",
-        "Thirumalai Nayakkar Palace",
-        "Alagar Kovil",
-        "Gandhi Memorial Museum",
-        "Koodal Azhagar Temple",
-        "Vandiyur Mariamman Teppakulam"
-    ],
-
-    "Dwarka": [
-        "Dwarkadhish Temple",
-        "Bet Dwarka",
-        "Nageshwar Jyotirlinga",
-        "Rukmini Temple",
-        "Gomti Ghat",
-        "Sudama Setu"
-    ]
-}
-
+        "Manali": [
+            "Hadimba Temple & Cedar Forest", "Solang Valley Adventure Sports", "Rohtang Pass Snow View", 
+            "Jogini Waterfalls Trek", "Old Manali Cafes & Music", "Vashisht Hot Springs"
+        ],
+        "Ladakh": [
+            "Pangong Tso Lake", "Nubra Valley & Diskit Monastery", "Khardung La Pass (5,359m)", 
+            "Shanti Stupa & Sunset", "Magnetic Hill & Indus Sangam", "Leh Palace & Local Bazaar"
+        ],
+        "Kerala": [
+            "Munnar Tea Gardens", "Alleppey Houseboat Cruise", "Wayanad Forest Safari", 
+            "Fort Kochi & Chinese Nets", "Varkala Cliff Beach", "Periyar Wildlife Sanctuary"
+        ],
+        "Andaman": [
+            "Radhanagar Beach Sunset", "Cellular Jail Light & Sound Show", "Havelock Island Scuba Diving", 
+            "Elephant Beach Snorkeling", "Ross Island Ruins", "Chidiya Tapu Birdwatching"
+        ],
+        "Jaipur": [
+            "Amber Fort & Sheesh Mahal", "Hawa Mahal (Palace of Winds)", "City Palace & Museum", 
+            "Jantar Mantar Royal Observatory", "Nahargarh Fort Sunset View", "Chokhi Dhani Cultural Village"
+        ],
+        "Varanasi": [
+            "Kashi Vishwanath Temple", "Dashashwamedh Ghat Evening Aarti", "Sarnath Buddhist Stupa", 
+            "Assi Ghat Sunrise Yoga & Boat Ride", "Manikarnika Ghat Heritage Walk", "Banarasi Weaving Village"
+        ],
+        "Rishikesh": [
+            "Laxman Jhula & Ram Jhula", "White Water Rafting at Shivpuri", "Triveni Ghat Evening Aarti", 
+            "Beatles Ashram (Chaurasi Kutia)", "Neer Garh Waterfall Trek", "Parmarth Niketan Yoga Session"
+        ],
+        "Coorg": [
+            "Abbey Waterfalls", "Raja's Seat Sunset Viewpoint", "Dubare Elephant Camp", 
+            "Talakaveri Source of Cauvery", "Namdroling Golden Temple (Bylakuppe)", "Mandalpatti 4x4 Jeep Safari"
+        ],
+        "Ooty": [
+            "Ooty Government Botanical Gardens", "Doddabetta Peak Viewpoint", "Nilgiri Mountain Toy Train", 
+            "Ooty Lake Boating", "Rose Garden & Tea Factory", "Pykara Lake & Waterfalls"
+        ],
+        "Tirupati": [
+            "Sri Venkateswara Swamy Temple (Tirumala)", "Padmavathi Ammavari Temple", "Akasa Ganga & Papavanasam", 
+            "Silathoranam Natural Arch", "Kapila Theertham Waterfalls", "Japali Hanuman Temple Trek"
+        ],
+        "Haridwar": [
+            "Har Ki Pauri Ganga Aarti", "Mansa Devi Temple Cable Car", "Chandi Devi Temple", 
+            "Bharat Mata Mandir", "Daksha Mahadev Temple", "Sapt Rishi Ashram"
+        ],
+        "Ayodhya": [
+            "Ram Janmabhoomi Mandir", "Hanuman Garhi Temple", "Kanak Bhawan Palace", 
+            "Saryu River Aarti at Ram Ki Paidi", "Nageshwarnath Temple", "Dashrath Mahal"
+        ],
+        "Ujjain": [
+            "Mahakaleshwar Jyotirlinga (Bhasma Aarti)", "Kal Bhairav Temple", "Harsiddhi Mata Temple", 
+            "Ram Ghat Shipra Aarti", "Mangalnath Temple", "Sandipani Ashram"
+        ],
+        "Puri": [
+            "Jagannath Temple", "Puri Golden Beach", "Gundicha Temple", 
+            "Konark Sun Temple", "Chilika Lake Dolphin Safari", "Raghurajpur Heritage Craft Village"
+        ],
+        "Rameswaram": [
+            "Ramanathaswamy Temple (22 Holy Well Baths)", "Agni Theertham Beach", "Dhanushkodi Ghost Town", 
+            "Pamban Sea Bridge Viewpoint", "Kothandaramaswamy Temple", "Dr. APJ Abdul Kalam Memorial"
+        ],
+        "Kedarnath": [
+            "Kedarnath Jyotirlinga Temple", "Bhairavnath Temple Hilltop View", "Vasuki Tal Glacial Lake Trek", 
+            "Shankaracharya Samadhi", "Gandhi Sarovar Walk", "Gaurikund Hot Springs"
+        ],
+        "Badrinath": [
+            "Badrinath Temple", "Tapt Kund Hot Springs", "Mana Village (First Village of India)", 
+            "Vyas Gufa & Ganesh Gufa", "Bheem Pul Natural Stone Bridge", "Vasudhara Falls Trek"
+        ],
+        "Amritsar": [
+            "Golden Temple (Harmandir Sahib)", "Wagah Border Flag Ceremony", "Jallianwala Bagh Memorial", 
+            "Akal Takht & Sarovar Walk", "Durgiana Temple", "Partition Museum"
+        ],
+        "Madurai": [
+            "Meenakshi Amman Temple Complex", "Thirumalai Nayakkar Palace", "Alagar Kovil Temple", 
+            "Gandhi Memorial Museum", "Koodal Azhagar Temple", "Vandiyur Teppakulam Lake"
+        ],
+        "Dwarka": [
+            "Dwarkadhish Temple", "Bet Dwarka Island Boat Trip", "Nageshwar Jyotirlinga", 
+            "Rukmini Devi Temple", "Gomti Ghat Sunset", "Sudama Setu Suspension Bridge"
+        ],
+        "Mangaluru": [
+            "Panambur Beach Sunset & Jet Skiing", "Tannirbhavi Beach & Pine Forest", "Kadri Manjunath Temple", 
+            "St. Aloysius Chapel Frescoes", "Sammilan Shetty's Butterfly Park", "Pilikula Biological Park"
+        ],
+        "Munnar": [
+            "Tea Gardens & Tata Tea Museum", "Eravikulam National Park (Nilgiri Tahr)", "Mattupetty Dam Boating", 
+            "Anamudi Peak Viewpoint", "Kundala Lake Speedboating", "Attukad Waterfalls Trek"
+        ],
+        "Kolad": [
+            "Kundalika River White Water Rafting", "Tamhini Ghat Waterfall Views", "Bhira Dam Camping Ground", 
+            "Devkund Waterfall Trek", "Ghosala Fort", "Kuda Buddhist Caves"
+        ],
+        "Nagarhole": [
+            "Kabini River Boat Safari", "Nagarhole Tiger Reserve Jeep Safari", "Iruppu Waterfalls Trek", 
+            "Kuruva Dweep Bamboo Rafting", "Brahmagiri Wildlife Sanctuary", "Balthora Jungle Trail"
+        ],
+        "Udaipur": [
+            "City Palace & Museum", "Lake Pichola Sunset Boat Cruise", "Jag Mandir Island Palace", 
+            "Saheliyon Ki Bari Gardens", "Sajjangarh Monsoon Palace", "Bagore Ki Haveli Cultural Show"
+        ],
+        "Darjeeling": [
+            "Tiger Hill Sunrise over Kanchenjunga", "Darjeeling Himalayan Toy Train", "Batasia Loop & War Memorial", 
+            "Happy Valley Tea Estate", "Padmaja Naidu Himalayan Zoo", "Peace Pagoda & Japanese Temple"
+        ],
+        "Shimla": [
+            "The Ridge & Mall Road Promenade", "Jakhoo Temple & Giant Hanuman Statue", "Kufri Snow & Nature Park", 
+            "Christ Church Shimla", "Viceregal Lodge (Indian Institute of Advanced Study)", "Annandale Ground & Museum"
+        ],
+        "Hampi": [
+            "Virupaksha Temple", "Vittala Temple Stone Chariot & Musical Pillars", "Matanga Hill Sunrise Point", 
+            "Lotus Mahal & Elephant Stables", "Anegundi Village & Tungabhadra River Coracle Ride", "Coracle Ride at Sanapur Lake"
+        ],
+        "Jim Corbett": [
+            "Dhikala Zone Jungle Safari", "Garjia Devi Temple in Kosi River", "Corbett Waterfall & Nature Walk", 
+            "Bijrani Safari Zone", "Corbett Museum at Kaladhungi", "Sitabani Buffer Zone Trail"
+        ],
+        "Kaziranga": [
+            "Kaziranga Elephant Safari (Central Range)", "Kohora & Bagori Jeep Safari", "Orchid & Biodiversity Park", 
+            "Kakochang Waterfall Trek", "Brahmaputra River Boat Cruise", "Tea Garden Estate Walk"
+        ]
+    }
     
-    dest_attractions = attractions.get(destination, ["Local Landmarks", "Cultural Markets", "Nature Viewpoints", "Scenic Parks", "Historical Buildings", "Popular Cafes"])
+    dest_attractions = attractions.get(
+        destination, 
+        [f"{destination} Heritage Walk", f"{destination} Scenic Viewpoint", f"{destination} Cultural Market", f"{destination} Historic Temple", f"{destination} Nature Trail", f"{destination} Local Crafts Center"]
+    )
+
+    dining_suggestions = {
+        "Goa": ["Britto's Beach Shack (Seafood Thali)", "Fisherman's Wharf (Goan Fish Curry)", "Vinayak Family Restaurant (Authentic Xacuti)"],
+        "Manali": ["Cafe 1947 (Riverside Italian)", "Johnson's Cafe (Trout Speciality)", "Chopsticks (Tibetan Thukpa)"],
+        "Jaipur": ["Chokhi Dhani (Traditional Rajasthani Thali)", "Lassiwala (Classic Kulhad Lassi)", "1135 AD at Amber Fort (Royal Dining)"],
+        "Varanasi": ["Kashi Chat Bhandar (Tamatar Chat & Tikki)", "Blue Lassi Shop (Famous Fruit Lassi)", "Dolphin Restaurant (Ghatside View)"],
+        "Kerala": ["Kuttanad Duck Curry at Local Shack", "Fort House Restaurant (Seafood Karimeen)", "Saravana Bhavan (South Indian Feast)"],
+        "Ladakh": ["Tibetan Kitchen (Momos & Thukpa)", "Bon Appetit (Leh Valley View)", "Gesmo Restaurant (Bakery & Yak Cheese)"],
+        "Coorg": ["Raintree Restaurant (Pandi Curry & Akki Roti)", "Coorg Cuisine (Kodava Delicacies)", "Fallsview Restaurant"],
+        "Ooty": ["Nahar's Sidewalk Cafe (Wood-fired Pizza)", "Place To Bee (Organic Honey Crepes)", "Shinkows (Chinese Legacy)"],
+        "Mangaluru": ["Giri Manja's (Seafood Fry & Curry)", "Ideal Ice Cream Parlour (Gadbad Special)", "Shetty Lunch Home (Anjal Tawa Fry)"],
+        "Munnar": ["Saravana Bhavan (Traditional Banana Leaf Meal)", "Rapsy Restaurant (Kerala Parotta & Beef/Chicken)", "Tea County Restaurant"],
+        "Hampi": ["Mango Tree Restaurant (Riverside Thali)", "Zorba the Buddha Cafe (Continental & Israeli)", "Laughing Buddha Cafe"],
+        "Udaipur": ["Ambrai (Lakeside City Palace View)", "Udai Kothi Rooftop", "Natraj Dining Hall (Rajasthani Unlimited Thali)"]
+    }
+    
+    city_dining = dining_suggestions.get(destination, [
+        f"Authentic {destination} Thali House", 
+        f"Top-rated {destination} Bistro & Grill", 
+        f"Popular Local Street Food Hub in {destination}"
+    ])
     
     for day in range(1, days + 1):
-        itinerary += f"#### Day {day}: Exploring the Highlights\n"
+        itinerary += f"#### Day {day}: Highlights of {destination}\n"
         attr1 = dest_attractions[(day * 2 - 2) % len(dest_attractions)]
         attr2 = dest_attractions[(day * 2 - 1) % len(dest_attractions)]
+        dine = city_dining[(day - 1) % len(city_dining)]
         
-        itinerary += f"- **Morning**: Visit {attr1} for scenic views and exploration.\n"
-        itinerary += f"- **Afternoon**: Enjoy lunch at a highly-rated local restaurant and head to {attr2}.\n"
-        itinerary += f"- **Evening**: Stroll around the local markets, buy souvenirs, and experience the local nightlife.\n"
-        itinerary += f"- **Dining Suggestion**: Try authentic regional cuisine at a local bistro.\n\n"
+        itinerary += f"- **Morning**: Visit {attr1} for early morning exploration, photographs, and sightseeing.\n"
+        itinerary += f"- **Afternoon**: Enjoy lunch at {dine} and continue to {attr2}.\n"
+        itinerary += f"- **Evening**: Stroll through local markets, enjoy sunset viewpoints, and experience the evening vibe of {destination}.\n"
+        itinerary += f"- **Dining Suggestion**: Taste regional specialties at {dine}.\n\n"
         
     itinerary += "#### 💡 Essential Travel Tips\n"
-    itinerary += "1. **Local Transport**: Renting a scooter or using local cabs is highly recommended.\n"
-    itinerary += "2. **Best Time**: Plan outdoor activities early in the morning to beat the rush/heat.\n"
-    itinerary += "3. **Cultural Etiquette**: Dress respectfully when visiting temples or sacred historical sites.\n"
+    itinerary += f"1. **Local Transport**: Auto-rickshaws, rented two-wheelers, or private cabs are recommended for easy commuting in {destination}.\n"
+    itinerary += "2. **Best Time for Sights**: Start your morning visits early around 8:00 AM to beat crowds and summer heat.\n"
+    itinerary += "3. **Cultural Respect**: Dress modestly when visiting religious temples, shrines, and sacred heritage monuments.\n"
     
     return itinerary
 

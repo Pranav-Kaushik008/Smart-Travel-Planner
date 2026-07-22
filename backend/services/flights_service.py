@@ -49,6 +49,11 @@ NEAREST_AIRPORT = {
         "city": "Mysore (Mandakalli)",
         "distance": "95 km from Nagarhole",
     },
+    "Sundarbans": {
+        "airport": "CCU",
+        "city": "Kolkata (Netaji Subhash Chandra Bose)",
+        "distance": "110 km from Sundarbans",
+    },
     "Coorg": {
         "airport": "MYQ",
         "city": "Mysore (Mandakalli)",
