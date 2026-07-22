@@ -693,8 +693,10 @@ const ProfilePage = () => {
                         <BarChart data={budgetChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                           <XAxis dataKey="name" stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} />
                           <ChartTooltip 
-                            formatter={(value) => [`₹${Number(value).toFixed(2)}`, "Estimated"]} 
-                            contentStyle={{ borderRadius: "12px", border: "none", boxShadow: "0 10px 30px rgba(0,0,0,0.15)", backgroundColor: "#0f172a", color: "#fff" }}
+                            formatter={(value) => [`₹${Number(value).toLocaleString("en-IN", { minimumFractionDigits: 2 })}`, "Estimated"]} 
+                            contentStyle={{ borderRadius: "16px", border: "1px solid rgba(255,255,255,0.15)", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.5)", backgroundColor: "#090d16", color: "#fff", padding: "10px 14px" }}
+                            itemStyle={{ color: "#38bdf8", fontWeight: "bold", fontSize: "12px" }}
+                            labelStyle={{ color: "#f8fafc", fontWeight: "bold", fontSize: "12px" }}
                           />
                           <Bar dataKey="value" radius={[8, 8, 0, 0]}>
                             {budgetChartData.map((entry, index) => (
@@ -715,8 +717,10 @@ const ProfilePage = () => {
                           <BarChart data={actualChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                             <XAxis dataKey="name" stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} />
                             <ChartTooltip 
-                              formatter={(value) => [`₹${Number(value).toFixed(2)}`, "Actual"]} 
-                              contentStyle={{ borderRadius: "12px", border: "none", boxShadow: "0 10px 30px rgba(0,0,0,0.15)", backgroundColor: "#0f172a", color: "#fff" }}
+                              formatter={(value) => [`₹${Number(value).toLocaleString("en-IN", { minimumFractionDigits: 2 })}`, "Actual"]} 
+                              contentStyle={{ borderRadius: "16px", border: "1px solid rgba(255,255,255,0.15)", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.5)", backgroundColor: "#090d16", color: "#fff", padding: "10px 14px" }}
+                              itemStyle={{ color: "#34d399", fontWeight: "bold", fontSize: "12px" }}
+                              labelStyle={{ color: "#f8fafc", fontWeight: "bold", fontSize: "12px" }}
                             />
                             <Bar dataKey="value" radius={[8, 8, 0, 0]}>
                               {actualChartData.map((entry, index) => (

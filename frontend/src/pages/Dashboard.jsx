@@ -228,12 +228,27 @@ const Dashboard = () => {
                         ))}
                       </Pie>
                       <Tooltip 
-                        formatter={(value) => `₹${value.toLocaleString()}`}
-                        contentStyle={{ 
-                          backgroundColor: "rgba(15, 23, 42, 0.9)",
-                          border: "none",
-                          borderRadius: "12px",
-                          color: "#fff"
+                        content={({ active, payload }) => {
+                          if (active && payload && payload.length) {
+                            const data = payload[0];
+                            return (
+                              <div className="bg-slate-950/95 border border-slate-700/80 px-4 py-3 rounded-2xl shadow-2xl backdrop-blur-md">
+                                <div className="flex items-center gap-2">
+                                  <div
+                                    className="w-3 h-3 rounded-full shrink-0"
+                                    style={{ backgroundColor: data.payload.fill || data.color }}
+                                  />
+                                  <span className="text-xs font-extrabold text-slate-200">
+                                    {data.name}:
+                                  </span>
+                                  <span className="text-xs font-black text-sky-400">
+                                    ₹{Number(data.value).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          }
+                          return null;
                         }} 
                       />
                     </PieChart>
