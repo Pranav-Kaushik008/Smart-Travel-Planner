@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import { ThemeProvider } from "./context/ThemeContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
@@ -13,6 +14,8 @@ import Dashboard from "./pages/Dashboard";
 import TravelPlanner from "./pages/TravelPlanner";
 import TripHistory from "./pages/TripHistory";
 import ProfilePage from "./pages/ProfilePage";
+import SettingsPage from "./pages/SettingsPage";
+import HelpSupportPage from "./pages/HelpSupportPage";
 
 import { Toaster } from "react-hot-toast";
 
@@ -23,12 +26,12 @@ const AppContent = () => {
 
   const showSidebar =
     user &&
-    ["/dashboard", "/planner", "/history", "/profile"].includes(
+    ["/dashboard", "/planner", "/history", "/profile", "/settings", "/help"].includes(
       location.pathname
     );
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 transition-colors duration-300">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
       <Navbar onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
       <div className="flex">
@@ -101,6 +104,24 @@ const AppContent = () => {
               }
             />
 
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <SettingsPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/help"
+              element={
+                <ProtectedRoute>
+                  <HelpSupportPage />
+                </ProtectedRoute>
+              }
+            />
+
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
@@ -119,7 +140,9 @@ const AppContent = () => {
 function App() {
   return (
     <AuthProvider>
-      <AppContent />
+      <ThemeProvider>
+        <AppContent />
+      </ThemeProvider>
     </AuthProvider>
   );
 }

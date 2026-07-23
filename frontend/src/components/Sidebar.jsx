@@ -1,6 +1,14 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { FaChartPie, FaCalendarAlt, FaHistory, FaUser, FaTimes } from "react-icons/fa";
+import {
+  FaChartPie,
+  FaCalendarAlt,
+  FaHistory,
+  FaUser,
+  FaCog,
+  FaQuestionCircle,
+  FaTimes
+} from "react-icons/fa";
 
 const Sidebar = ({ isOpen, onClose }) => {
   const links = [
@@ -8,6 +16,8 @@ const Sidebar = ({ isOpen, onClose }) => {
     { to: "/planner", label: "Travel Planner", icon: <FaCalendarAlt className="w-5 h-5" /> },
     { to: "/history", label: "Trip History", icon: <FaHistory className="w-5 h-5" /> },
     { to: "/profile", label: "My Profile", icon: <FaUser className="w-5 h-5" /> },
+    { to: "/settings", label: "Settings", icon: <FaCog className="w-5 h-5" /> },
+    { to: "/help", label: "Help & Support", icon: <FaQuestionCircle className="w-5 h-5" /> },
   ];
 
   return (
@@ -16,12 +26,12 @@ const Sidebar = ({ isOpen, onClose }) => {
       {isOpen && (
         <div
           onClick={onClose}
-          className="fixed inset-0 z-30 bg-slate-900/40 backdrop-blur-xs lg:hidden"
+          className="fixed inset-0 z-30 bg-black/30 dark:bg-slate-900/40 backdrop-blur-xs lg:hidden"
         />
       )}
 
       <aside
-        className={`fixed lg:sticky inset-y-16 left-0 z-35 flex w-64 flex-col border-r glass-panel bg-white/80 dark:bg-slate-900/80 transition-transform duration-300 lg:translate-x-0 max-h-[calc(100vh-4rem)] overflow-y-auto ${
+        className={`fixed lg:sticky inset-y-16 left-0 z-35 flex w-64 flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-transform duration-300 lg:translate-x-0 max-h-[calc(100vh-4rem)] overflow-y-auto ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >

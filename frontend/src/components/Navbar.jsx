@@ -1,16 +1,13 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { FaBars, FaUser, FaSignOutAlt, FaCompass } from "react-icons/fa";
+import { useTheme } from "../context/ThemeContext";
+import { FaBars, FaUser, FaSignOutAlt, FaCompass, FaSun, FaMoon } from "react-icons/fa";
 
 const Navbar = ({ onToggleSidebar }) => {
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
-
-  React.useEffect(() => {
-    document.documentElement.classList.add("dark");
-    document.body.classList.add("dark");
-  }, []);
 
   const handleLogout = () => {
     logout();
@@ -18,40 +15,53 @@ const Navbar = ({ onToggleSidebar }) => {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full glass-panel border-b bg-white/70 dark:bg-slate-900/70 shadow-sm backdrop-blur-md">
+    <header className="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 shadow-sm backdrop-blur-md transition-colors duration-300">
       <div className="flex h-16 items-center justify-between px-4 md:px-6">
         <div className="flex items-center space-x-3">
           {user && (
             <button
               onClick={onToggleSidebar}
-              className="mr-2 rounded-lg p-2 hover:bg-slate-200 dark:hover:bg-slate-800 lg:hidden text-slate-600 dark:text-slate-300"
+              className="mr-2 rounded-lg p-2 hover:bg-slate-100 dark:hover:bg-slate-800 lg:hidden text-slate-600 dark:text-slate-300"
             >
               <FaBars className="h-5 w-5" />
             </button>
           )}
           <Link to={user ? "/dashboard" : "/"} className="flex items-center space-x-2">
             <FaCompass className="h-7 w-7 text-sky-500 animate-pulse" />
-            <span className="text-xl font-bold tracking-tight text-slate-800 dark:text-white bg-gradient-to-r from-sky-500 to-indigo-500 bg-clip-text text-transparent">
+            <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-sky-500 to-indigo-500 bg-clip-text text-transparent">
               Smart Travel Planner
             </span>
           </Link>
         </div>
 
-        <nav className="flex items-center space-x-4">
+        <nav className="flex items-center space-x-3 sm:space-x-4">
+          {/* Theme Toggle */}
+          <button
+            onClick={toggleTheme}
+            className="relative p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all shadow-xs overflow-hidden"
+            title={theme === "dark" ? "Switch to Light Theme" : "Switch to Dark Theme"}
+          >
+            {theme === "dark" ? (
+              <FaSun className="h-4 w-4 text-amber-400" />
+            ) : (
+              <FaMoon className="h-4 w-4 text-indigo-500" />
+            )}
+          </button>
+
           {user ? (
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3 sm:space-x-4">
               <span className="hidden md:inline text-sm font-medium text-slate-600 dark:text-slate-300">
                 Hi, {user.full_name || user.username}
               </span>
               <Link
                 to="/profile"
-                className="rounded-full bg-slate-200 dark:bg-slate-800 hover:border-sky-500 transition-all overflow-hidden w-9 h-9 flex items-center justify-center border-2 border-transparent"
+                className="rounded-full bg-slate-100 dark:bg-slate-800 hover:ring-2 hover:ring-sky-500 transition-all overflow-hidden w-9 h-9 flex items-center justify-center border-2 border-transparent"
                 title="Profile"
               >
                 {user.profile_pic ? (
                   <img src={user.profile_pic} alt="Profile" className="w-full h-full object-cover" />
                 ) : (
-                  <FaUser className="h-4 w-4 text-slate-600 dark:text-slate-300" />
+                  <FaUser className="h-4 w-4 text-slate-500 dark:text-slate-300" />
                 )}
               </Link>
               <button
