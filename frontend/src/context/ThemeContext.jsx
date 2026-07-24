@@ -14,6 +14,17 @@ export const ThemeProvider = ({ children }) => {
     return localStorage.getItem("app_theme") || "dark";
   });
 
+  const [accentColor, setAccentColor] = useState(() => {
+    try {
+      const savedSettings = localStorage.getItem("user_app_settings");
+      if (savedSettings) {
+        const parsed = JSON.parse(savedSettings);
+        if (parsed.accentColor) return parsed.accentColor;
+      }
+    } catch (e) { /* ignore */ }
+    return localStorage.getItem("app_accent") || "sky";
+  });
+
   useEffect(() => {
     const root = document.documentElement;
     const body = document.body;
@@ -23,7 +34,6 @@ export const ThemeProvider = ({ children }) => {
       root.classList.remove("light");
       body.classList.add("dark");
       body.classList.remove("light");
-      // Set direct styles as fallback for immediate visual change
       body.style.backgroundColor = "#020617";
       body.style.color = "#e2e8f0";
     } else {
@@ -37,7 +47,6 @@ export const ThemeProvider = ({ children }) => {
 
     localStorage.setItem("app_theme", theme);
 
-    // Sync into user_app_settings
     try {
       const savedSettings = localStorage.getItem("user_app_settings");
       let settingsObj = savedSettings ? JSON.parse(savedSettings) : {};
@@ -46,12 +55,24 @@ export const ThemeProvider = ({ children }) => {
     } catch (e) { /* ignore */ }
   }, [theme]);
 
+  useEffect(() => {
+    document.documentElement.setAttribute("data-accent", accentColor);
+    localStorage.setItem("app_accent", accentColor);
+
+    try {
+      const savedSettings = localStorage.getItem("user_app_settings");
+      let settingsObj = savedSettings ? JSON.parse(savedSettings) : {};
+      settingsObj.accentColor = accentColor;
+      localStorage.setItem("user_app_settings", JSON.stringify(settingsObj));
+    } catch (e) { /* ignore */ }
+  }, [accentColor]);
+
   const toggleTheme = () => {
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme, accentColor, setAccentColor }}>
       {children}
     </ThemeContext.Provider>
   );

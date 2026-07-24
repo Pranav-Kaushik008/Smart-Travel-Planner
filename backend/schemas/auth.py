@@ -37,6 +37,7 @@ class UserResponse(BaseModel):
     interests: Optional[List[str]] = []
     favorite_destinations: Optional[List[str]] = []
     languages: Optional[List[str]] = []
+    is_admin: bool = False
     created_at: datetime
 
     class Config:

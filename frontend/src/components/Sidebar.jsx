@@ -1,5 +1,8 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
+import { getAccentTheme } from "../utils/themeUtils";
 import {
   FaChartPie,
   FaCalendarAlt,
@@ -7,10 +10,18 @@ import {
   FaUser,
   FaCog,
   FaQuestionCircle,
+  FaTicketAlt,
+  FaUserShield,
   FaTimes
 } from "react-icons/fa";
 
 const Sidebar = ({ isOpen, onClose }) => {
+  const { user } = useAuth();
+  const { accentColor } = useTheme();
+  const accentTheme = getAccentTheme(accentColor);
+
+  const isAdmin = user?.is_admin === true;
+
   const links = [
     { to: "/dashboard", label: "Dashboard", icon: <FaChartPie className="w-5 h-5" /> },
     { to: "/planner", label: "Travel Planner", icon: <FaCalendarAlt className="w-5 h-5" /> },
@@ -18,7 +29,12 @@ const Sidebar = ({ isOpen, onClose }) => {
     { to: "/profile", label: "My Profile", icon: <FaUser className="w-5 h-5" /> },
     { to: "/settings", label: "Settings", icon: <FaCog className="w-5 h-5" /> },
     { to: "/help", label: "Help & Support", icon: <FaQuestionCircle className="w-5 h-5" /> },
+    { to: "/support-history", label: "Support History", icon: <FaTicketAlt className="w-5 h-5" /> },
   ];
+
+  if (isAdmin) {
+    links.push({ to: "/admin/support", label: "Admin Support", icon: <FaUserShield className="w-5 h-5" /> });
+  }
 
   return (
     <>
@@ -51,7 +67,7 @@ const Sidebar = ({ isOpen, onClose }) => {
               className={({ isActive }) =>
                 `flex items-center space-x-3.5 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-200 ${
                   isActive
-                    ? "bg-gradient-to-r from-sky-500 to-indigo-500 text-white shadow-lg shadow-indigo-500/20"
+                    ? `${accentTheme.gradient} text-white shadow-lg ${accentTheme.shadow}`
                     : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
                 }`
               }

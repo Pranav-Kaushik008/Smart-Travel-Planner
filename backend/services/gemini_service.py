@@ -208,3 +208,60 @@ async def generate_itinerary(destination: str, days: int, travel_type: str, budg
     except Exception as e:
         print(f"Error in Gemini itinerary generation: {e}")
         return get_mock_itinerary(destination, days, travel_type)
+
+
+async def generate_group_itinerary(
+    destination: str,
+    days: int,
+    travel_type: str,
+    total_budget: float,
+    total_travelers: int,
+    adults: int,
+    children: int,
+    seniors: int,
+    relationship: str,
+    special_requirements: list = None
+) -> str:
+    """
+    Generates a group-oriented day-wise itinerary with rest breaks, senior/child friendly pacing, and group dining.
+    """
+    reqs_str = ", ".join(special_requirements) if special_requirements else "None"
+    
+    if not settings.GEMINI_API_KEY or settings.GEMINI_API_KEY == "your_gemini_api_key_here":
+        base_itinerary = get_mock_itinerary(destination, days, travel_type)
+        group_header = f"### 👥 Group Travel Itinerary: {total_travelers} Travelers ({adults} Adults, {children} Children, {seniors} Seniors)\n"
+        group_header += f"**Group Type**: {relationship} | **Diet / Accessibility**: {reqs_str}\n\n"
+        group_notes = "#### 👨‍👩‍👧‍👦 Group Comfort & Rest Breaks\n"
+        group_notes += "1. **Scheduled Rest Break**: Afternoon 2:00 PM – 3:30 PM reserved for relaxation, tea, and senior/child rest.\n"
+        group_notes += "2. **Group Dining**: Pre-booked group thali tables recommended at major stops.\n\n"
+        return group_header + group_notes + base_itinerary
+
+    try:
+        client = genai.Client(api_key=settings.GEMINI_API_KEY)
+        prompt = f"""
+        Create a detailed, well-paced day-wise GROUP travel itinerary for {destination}.
+        
+        Group Trip Specifications:
+        - Destination: {destination}
+        - Duration: {days} Days
+        - Travel Style: {travel_type}
+        - Total Group Budget: INR {total_budget}
+        - Group Composition: {total_travelers} Total Travelers ({adults} Adults, {children} Children, {seniors} Senior Citizens)
+        - Group Type: {relationship}
+        - Special Preferences & Needs: {reqs_str}
+        
+        Guidelines:
+        1. Avoid overly hectic schedules. Include 1.5-hour afternoon rest breaks for seniors & children.
+        2. Recommend family and group-friendly restaurants with ample seating and dietary options.
+        3. Highlight attractions with wheelchair / easy walking access if senior citizens or infants are traveling.
+        4. Format in clean Markdown with Morning, Afternoon, Evening, Group Dining, and Essential Group Tips.
+        """
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt
+        )
+        return response.text
+    except Exception as e:
+        print(f"Error in Gemini group itinerary generation: {e}")
+        return get_mock_itinerary(destination, days, travel_type)
+

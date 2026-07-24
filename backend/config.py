@@ -20,6 +20,8 @@ class Settings(BaseSettings):
     OPENROUTE_API_KEY: str = ""
     AVIATIONSTACK_API_KEY: str = ""
     RAPIDAPI_KEY: str = ""
+    RESEND_API_KEY: str = ""
+    ADMIN_EMAIL: str = "admin@smarttravelplanner.com"
     
     # JWT Settings
     JWT_SECRET_KEY: str = "supersecretkeychangeinproduction12345!"

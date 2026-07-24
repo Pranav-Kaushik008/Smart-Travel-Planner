@@ -18,11 +18,11 @@ import {
   FaMoon,
   FaSun
 } from "react-icons/fa";
-import toast from "react-hot-toast";
+import { getAccentTheme } from "../utils/themeUtils";
 
 const SettingsPage = () => {
   const { user } = useAuth();
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, accentColor, setAccentColor } = useTheme();
   const [activeTab, setActiveTab] = useState("appearance"); // default to appearance tab as requested
   
   // Settings State
@@ -46,6 +46,8 @@ const SettingsPage = () => {
         };
   });
 
+  const accentTheme = getAccentTheme(accentColor || settings.accentColor);
+
   // Password Change Modal State
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [passwordForm, setPasswordForm] = useState({
@@ -66,6 +68,14 @@ const SettingsPage = () => {
     setTheme(newTheme);
     setSettings((prev) => ({ ...prev, theme: newTheme }));
     toast.success(`Switched to ${newTheme === "dark" ? "Dark" : "Light"} Mode!`);
+  };
+
+  const handleAccentChange = (newAccent) => {
+    if (setAccentColor) {
+      setAccentColor(newAccent);
+    }
+    setSettings((prev) => ({ ...prev, accentColor: newAccent }));
+    toast.success(`Accent theme updated to ${newAccent.charAt(0).toUpperCase() + newAccent.slice(1)}!`);
   };
 
   const toggleSetting = (key) => {
@@ -147,7 +157,7 @@ const SettingsPage = () => {
 
         <button
           onClick={handleSaveAll}
-          className="flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-500 text-white font-extrabold text-xs sm:text-sm hover:shadow-lg hover:shadow-sky-500/25 transition-all w-fit"
+          className={`flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl ${accentTheme.gradient} text-white font-extrabold text-xs sm:text-sm hover:shadow-lg ${accentTheme.shadow} transition-all w-fit`}
         >
           <FaSave />
           <span>Save Changes</span>
@@ -159,22 +169,10 @@ const SettingsPage = () => {
         {/* Navigation Sidebar */}
         <div className="glass-panel p-3 rounded-3xl border border-slate-200/60 dark:border-slate-800/80 bg-white/70 dark:bg-slate-900/70 h-fit space-y-1">
           <button
-            onClick={() => setActiveTab("general")}
-            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold transition-all ${
-              activeTab === "general"
-                ? "bg-sky-500 text-white shadow-md shadow-sky-500/20"
-                : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
-            }`}
-          >
-            <FaGlobe className="text-base" />
-            <span>General Preferences</span>
-          </button>
-
-          <button
             onClick={() => setActiveTab("appearance")}
             className={`w-full flex items-center space-x-3 px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold transition-all ${
               activeTab === "appearance"
-                ? "bg-sky-500 text-white shadow-md shadow-sky-500/20"
+                ? accentTheme.activeTab
                 : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
             }`}
           >
@@ -186,7 +184,7 @@ const SettingsPage = () => {
             onClick={() => setActiveTab("notifications")}
             className={`w-full flex items-center space-x-3 px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold transition-all ${
               activeTab === "notifications"
-                ? "bg-sky-500 text-white shadow-md shadow-sky-500/20"
+                ? accentTheme.activeTab
                 : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
             }`}
           >
@@ -198,7 +196,7 @@ const SettingsPage = () => {
             onClick={() => setActiveTab("security")}
             className={`w-full flex items-center space-x-3 px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold transition-all ${
               activeTab === "security"
-                ? "bg-sky-500 text-white shadow-md shadow-sky-500/20"
+                ? accentTheme.activeTab
                 : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
             }`}
           >
@@ -210,7 +208,7 @@ const SettingsPage = () => {
             onClick={() => setActiveTab("data")}
             className={`w-full flex items-center space-x-3 px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold transition-all ${
               activeTab === "data"
-                ? "bg-sky-500 text-white shadow-md shadow-sky-500/20"
+                ? accentTheme.activeTab
                 : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
             }`}
           >
@@ -221,62 +219,6 @@ const SettingsPage = () => {
 
         {/* Content Panel */}
         <div className="lg:col-span-3 glass-panel p-6 sm:p-8 rounded-3xl border border-slate-200/60 dark:border-slate-800/80 bg-white/70 dark:bg-slate-900/70 space-y-6">
-          {/* TAB 1: GENERAL PREFERENCES */}
-          {activeTab === "general" && (
-            <div className="space-y-6 animate-fadeIn">
-              <h3 className="text-lg font-black text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-3">
-                General Preferences
-              </h3>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
-                    Default Currency
-                  </label>
-                  <select
-                    value={settings.currency}
-                    onChange={(e) => handleSelectChange("currency", e.target.value)}
-                    className="w-full px-4 py-3 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm font-semibold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-500"
-                  >
-                    <option value="INR">INR (₹) - Indian Rupee</option>
-                    <option value="USD">USD ($) - US Dollar</option>
-                    <option value="EUR">EUR (€) - Euro</option>
-                    <option value="GBP">GBP (£) - British Pound</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
-                    Temperature Unit
-                  </label>
-                  <select
-                    value={settings.tempUnit}
-                    onChange={(e) => handleSelectChange("tempUnit", e.target.value)}
-                    className="w-full px-4 py-3 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm font-semibold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-500"
-                  >
-                    <option value="C">Celsius (°C)</option>
-                    <option value="F">Fahrenheit (°F)</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
-                  Default Travel Style Preference
-                </label>
-                <select
-                  value={settings.defaultBudgetStyle}
-                  onChange={(e) => handleSelectChange("defaultBudgetStyle", e.target.value)}
-                  className="w-full px-4 py-3 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm font-semibold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-500"
-                >
-                  <option value="Backpacker">Backpacker / Budget Traveler</option>
-                  <option value="Comfort">Comfort & Standard</option>
-                  <option value="Boutique">Boutique & Premium</option>
-                  <option value="Luxury">Luxury & Resort</option>
-                </select>
-              </div>
-            </div>
-          )}
 
           {/* TAB 2: APPEARANCE */}
           {activeTab === "appearance" && (
@@ -364,27 +306,35 @@ const SettingsPage = () => {
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">
                     Accent Color Theme
                   </label>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
                     {[
-                      { id: "sky", name: "Sky Blue", class: "bg-sky-500" },
-                      { id: "indigo", name: "Indigo", class: "bg-indigo-500" },
-                      { id: "emerald", name: "Emerald", class: "bg-emerald-500" },
-                      { id: "amber", name: "Amber", class: "bg-amber-500" }
-                    ].map((accent) => (
-                      <button
-                        key={accent.id}
-                        onClick={() => handleSelectChange("accentColor", accent.id)}
-                        className={`flex items-center space-x-2.5 p-3 rounded-2xl border text-xs font-bold transition-all ${
-                          settings.accentColor === accent.id
-                            ? "border-sky-500 bg-sky-500/10 text-slate-900 dark:text-white"
-                            : "border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-400"
-                        }`}
-                      >
-                        <span className={`w-4 h-4 rounded-full ${accent.class}`} />
-                        <span>{accent.name}</span>
-                        {settings.accentColor === accent.id && <FaCheck className="text-sky-500 ml-auto" />}
-                      </button>
-                    ))}
+                      { id: "sky", name: "Sky Blue", dotBg: "bg-sky-500", borderClass: "border-sky-500 bg-sky-500/15 shadow-lg shadow-sky-500/20 text-sky-600 dark:text-sky-300", checkColor: "text-sky-500" },
+                      { id: "indigo", name: "Indigo", dotBg: "bg-indigo-500", borderClass: "border-indigo-500 bg-indigo-500/15 shadow-lg shadow-indigo-500/20 text-indigo-600 dark:text-indigo-300", checkColor: "text-indigo-500" },
+                      { id: "emerald", name: "Emerald", dotBg: "bg-emerald-500", borderClass: "border-emerald-500 bg-emerald-500/15 shadow-lg shadow-emerald-500/20 text-emerald-600 dark:text-emerald-300", checkColor: "text-emerald-500" },
+                      { id: "amber", name: "Amber", dotBg: "bg-amber-500", borderClass: "border-amber-500 bg-amber-500/15 shadow-lg shadow-amber-500/20 text-amber-600 dark:text-amber-300", checkColor: "text-amber-500" },
+                      { id: "purple", name: "Purple", dotBg: "bg-purple-500", borderClass: "border-purple-500 bg-purple-500/15 shadow-lg shadow-purple-500/20 text-purple-600 dark:text-purple-300", checkColor: "text-purple-500" },
+                      { id: "rose", name: "Rose", dotBg: "bg-rose-500", borderClass: "border-rose-500 bg-rose-500/15 shadow-lg shadow-rose-500/20 text-rose-600 dark:text-rose-300", checkColor: "text-rose-500" }
+                    ].map((accent) => {
+                      const isActive = (accentColor || settings.accentColor) === accent.id;
+                      return (
+                        <button
+                          key={accent.id}
+                          type="button"
+                          onClick={() => handleAccentChange(accent.id)}
+                          className={`flex items-center justify-between p-3.5 rounded-2xl border text-xs font-black transition-all cursor-pointer ${
+                            isActive
+                              ? `${accent.borderClass} ring-2 ring-offset-1 ring-offset-slate-900 ring-current`
+                              : "border-slate-300 dark:border-slate-700/80 bg-white dark:bg-slate-950/70 text-slate-700 dark:text-slate-200 hover:border-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                          }`}
+                        >
+                          <div className="flex items-center space-x-2.5">
+                            <span className={`w-4 h-4 rounded-full ${accent.dotBg} shrink-0 ring-2 ring-white/20 shadow-xs`} />
+                            <span>{accent.name}</span>
+                          </div>
+                          {isActive && <FaCheck className={`${accent.checkColor} text-sm shrink-0`} />}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               </div>

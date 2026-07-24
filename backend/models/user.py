@@ -1,4 +1,4 @@
-from sqlalchemy import String, Integer, DateTime, Text, JSON
+from sqlalchemy import String, Integer, DateTime, Text, JSON, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
 from database.db import Base
@@ -17,6 +17,7 @@ class User(Base):
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
     full_name: Mapped[str] = mapped_column(String(100), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    is_admin: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     # Extra profile fields
     profile_pic: Mapped[str] = mapped_column(Text, nullable=True) # Base64 encoded or URL

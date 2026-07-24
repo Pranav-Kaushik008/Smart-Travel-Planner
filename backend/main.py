@@ -5,8 +5,9 @@ from database.db import engine, Base
 from config import settings
 from sqlalchemy import text
 from database.seed import seed_hotels
-from routes import auth, planner, weather, trips, hotels, dashboard, profile, transport
+from routes import auth, planner, weather, trips, hotels, dashboard, profile, transport, support, group_planner
 from services.recommendation_service import recommendation_engine
+import models  # Ensures all SQLAlchemy models are registered with Base.metadata
 
 
 @contextlib.asynccontextmanager
@@ -28,6 +29,7 @@ async def lifespan(app: FastAPI):
                 await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS interests JSON;"))
                 await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS favorite_destinations JSON;"))
                 await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS languages JSON;"))
+                await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE;"))
                 print("Ensured user profile columns exist (Postgres).")
             except Exception as e:
                 print("Warning: failed to ensure additional user columns:", e)
@@ -87,6 +89,8 @@ app.include_router(hotels.router, prefix="/api")
 app.include_router(dashboard.router, prefix="/api")
 app.include_router(profile.router, prefix="/api")
 app.include_router(transport.router, prefix="/api")
+app.include_router(support.router, prefix="/api")
+app.include_router(group_planner.router, prefix="/api")
 
 
 @app.get("/")

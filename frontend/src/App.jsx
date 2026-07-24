@@ -16,6 +16,8 @@ import TripHistory from "./pages/TripHistory";
 import ProfilePage from "./pages/ProfilePage";
 import SettingsPage from "./pages/SettingsPage";
 import HelpSupportPage from "./pages/HelpSupportPage";
+import SupportHistoryPage from "./pages/SupportHistoryPage";
+import AdminSupportPage from "./pages/AdminSupportPage";
 
 import { Toaster } from "react-hot-toast";
 
@@ -26,7 +28,7 @@ const AppContent = () => {
 
   const showSidebar =
     user &&
-    ["/dashboard", "/planner", "/history", "/profile", "/settings", "/help"].includes(
+    ["/dashboard", "/planner", "/history", "/profile", "/settings", "/help", "/support-history", "/admin/support"].includes(
       location.pathname
     );
 
@@ -118,6 +120,24 @@ const AppContent = () => {
               element={
                 <ProtectedRoute>
                   <HelpSupportPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/support-history"
+              element={
+                <ProtectedRoute>
+                  <SupportHistoryPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/admin/support"
+              element={
+                <ProtectedRoute>
+                  <AdminSupportPage />
                 </ProtectedRoute>
               }
             />
