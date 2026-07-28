@@ -51,6 +51,14 @@ class TripResponse(BaseModel):
     actual_activities: Optional[float] = None
     actual_misc: Optional[float] = None
     actual_total: Optional[float] = None
+    is_group_trip: Optional[bool] = False
+    group_name: Optional[str] = None
+    organizer_name: Optional[str] = None
+    relationship_type: Optional[str] = None
+    adults_count: Optional[int] = None
+    children_count: Optional[int] = None
+    seniors_count: Optional[int] = None
+    total_travelers: Optional[int] = None
     created_at: datetime
 
     class Config:

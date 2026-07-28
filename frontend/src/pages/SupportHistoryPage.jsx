@@ -280,21 +280,60 @@ const SupportHistoryPage = () => {
                     </div>
                   </div>
 
-                  {/* Admin Reply Section */}
-                  <div>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Support Team Response</span>
+                  {/* Conversation Thread */}
+                  <div className="space-y-3">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Conversation</span>
+
+                    {/* User message bubble */}
+                    <div className="flex items-start space-x-3">
+                      <div className="w-8 h-8 rounded-xl bg-indigo-500/20 flex items-center justify-center text-indigo-500 text-xs font-black flex-shrink-0">
+                        {user?.full_name?.[0]?.toUpperCase() || user?.username?.[0]?.toUpperCase() || "U"}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-1">
+                          <span className="text-[11px] font-extrabold text-slate-700 dark:text-slate-200">{user?.full_name || user?.username || "You"}</span>
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-400">User</span>
+                          <span className="text-[10px] text-slate-400">{new Date(selectedTicket.created_at).toLocaleString()}</span>
+                        </div>
+                        <div className="p-3.5 rounded-2xl rounded-tl-md bg-slate-50 dark:bg-slate-950/60 border border-slate-200/50 dark:border-slate-800/60 text-slate-700 dark:text-slate-300 leading-relaxed text-xs">
+                          {selectedTicket.message}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Admin reply bubble */}
                     {selectedTicket.admin_reply ? (
-                      <div className="p-3.5 rounded-2xl bg-sky-500/10 border border-sky-500/20 text-sky-950 dark:text-sky-200 leading-relaxed font-semibold">
-                        {selectedTicket.admin_reply}
+                      <div className="flex items-start space-x-3">
+                        <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-600 flex items-center justify-center text-white text-xs font-black flex-shrink-0">
+                          S
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2 mb-1">
+                            <span className="text-[11px] font-extrabold text-slate-700 dark:text-slate-200">Support Team</span>
+                            <span className="text-[10px] font-black px-1.5 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">✓ Staff</span>
+                            {selectedTicket.assigned_to && (
+                              <span className="text-[10px] text-slate-400">· {selectedTicket.assigned_to}</span>
+                            )}
+                          </div>
+                          <div className="p-3.5 rounded-2xl rounded-tl-md bg-emerald-500/8 border border-emerald-500/20 text-slate-700 dark:text-slate-200 leading-relaxed text-xs font-medium">
+                            {selectedTicket.admin_reply}
+                          </div>
+                        </div>
                       </div>
                     ) : (
-                      <div className="p-3.5 rounded-2xl bg-amber-500/5 border border-amber-500/10 text-amber-600 dark:text-amber-400 font-semibold italic text-center">
-                        Our support team is reviewing your ticket. You will receive an update shortly.
+                      <div className="flex items-center space-x-3 p-4 rounded-2xl bg-amber-500/5 border border-amber-500/15 border-dashed">
+                        <div className="w-8 h-8 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-500 text-xs">
+                          <FaClock />
+                        </div>
+                        <div>
+                          <p className="text-[11px] font-extrabold text-amber-600 dark:text-amber-400">Awaiting Support Response</p>
+                          <p className="text-[10px] text-slate-400 mt-0.5">Our team is reviewing your ticket. Expected response: &lt; 2 hours.</p>
+                        </div>
                       </div>
                     )}
                   </div>
 
-                  {selectedTicket.assigned_to && (
+                  {selectedTicket.assigned_to && !selectedTicket.admin_reply && (
                     <div className="text-[11px] font-bold text-slate-400">
                       Assigned Agent: <span className="text-slate-700 dark:text-slate-300">{selectedTicket.assigned_to}</span>
                     </div>

@@ -22,6 +22,8 @@ DESTINATION_COORDS = {
     "Sundarbans": (21.9497, 88.9007),
 }
 
+NON_ROAD_DESTINATIONS = {"Andaman", "Lakshadweep", "Port Blair", "Havelock Island"}
+
 async def get_route_info(origin_lat: float, origin_lng: float, destination: str) -> dict:
     """Get route info from origin coordinates to destination city."""
     dest_coords = DESTINATION_COORDS.get(destination)
@@ -30,6 +32,18 @@ async def get_route_info(origin_lat: float, origin_lng: float, destination: str)
     origin_city, origin_state = await _reverse_geocode(origin_lat, origin_lng)
     dest_city = destination
     
+    is_road_accessible = destination not in NON_ROAD_DESTINATIONS
+
+    if not is_road_accessible:
+        dist_km = _haversine(origin_lat, origin_lng, dest_coords[0], dest_coords[1]) if dest_coords else 1650.0
+        return {
+            "origin_city": origin_city, "origin_state": origin_state,
+            "dest_city": dest_city, "distance_km": round(dist_km, 1),
+            "duration_text": "Flight (~2h 30m) / Ship",
+            "route_summary": f"⚠️ No direct road/driving connection from {origin_city} to {dest_city}. Destination is an island territory in the Bay of Bengal / Indian Ocean. Air flight (to Port Blair - IXZ) or passenger ship travel from Chennai/Kolkata is required.",
+            "road_accessible": False
+        }
+
     if dest_coords and settings.OPENROUTE_API_KEY:
         try:
             async with httpx.AsyncClient(timeout=10) as client:
@@ -50,7 +64,8 @@ async def get_route_info(origin_lat: float, origin_lng: float, destination: str)
                         "origin_city": origin_city, "origin_state": origin_state,
                         "dest_city": dest_city, "distance_km": dist_km,
                         "duration_text": f"{hrs}h {mins}m",
-                        "route_summary": f"Drive via national highway from {origin_city} to {dest_city}"
+                        "route_summary": f"Drive via national highway from {origin_city} to {dest_city}",
+                        "road_accessible": True
                     }
         except Exception:
             pass
@@ -63,7 +78,8 @@ async def get_route_info(origin_lat: float, origin_lng: float, destination: str)
         "origin_city": origin_city, "origin_state": origin_state,
         "dest_city": dest_city, "distance_km": round(dist_km, 1),
         "duration_text": f"{hrs}h {mins}m",
-        "route_summary": f"Estimated route from {origin_city} to {dest_city} via highway"
+        "route_summary": f"Estimated route from {origin_city} to {dest_city} via highway",
+        "road_accessible": True
     }
 
 async def _reverse_geocode(lat: float, lng: float) -> tuple:

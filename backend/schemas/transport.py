@@ -8,6 +8,7 @@ class RouteResponse(BaseModel):
     distance_km: float
     duration_text: str
     route_summary: str
+    road_accessible: bool = True
 
 class FlightOffer(BaseModel):
     airline: str

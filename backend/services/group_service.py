@@ -31,11 +31,17 @@ def calculate_room_plan(total_travelers: int, adults: int, children: int, senior
     }
 
 
-def calculate_transport_plan(total_travelers: int, days: int) -> Dict[str, Any]:
+def calculate_transport_plan(total_travelers: int, days: int, destination: str = "") -> Dict[str, Any]:
     """
-    Recommends transport vehicle based on group size.
+    Recommends transport vehicle based on group size and destination type (island vs road).
     """
-    if total_travelers <= 2:
+    is_island = "andaman" in destination.lower() or "lakshadweep" in destination.lower() or "port blair" in destination.lower()
+    
+    if is_island:
+        recommended_vehicle = "Flight to Port Blair (IXZ) + Island Speedboat / Ferry & Local Taxi"
+        category = "Flight + Marine Ferry"
+        vehicle_capacity = total_travelers
+    elif total_travelers <= 2:
         recommended_vehicle = "Private Taxi / Sedan or Rental Bike"
         vehicle_capacity = 4
         category = "Compact Car / Bike"
@@ -56,7 +62,7 @@ def calculate_transport_plan(total_travelers: int, days: int) -> Dict[str, Any]:
         vehicle_capacity = 45
         category = "Luxury Bus / Train"
 
-    est_daily_transport = 3500.0 if total_travelers <= 5 else (7000.0 if total_travelers <= 12 else 12000.0)
+    est_daily_transport = 4500.0 if is_island else (3500.0 if total_travelers <= 5 else (7000.0 if total_travelers <= 12 else 12000.0))
     est_transport_cost = round(est_daily_transport * days, 2)
 
     return {
@@ -101,16 +107,19 @@ def get_emergency_directory(destination: str) -> Dict[str, Any]:
     }
 
 
-def calculate_expense_split(total_budget: float, adults: int, children: int, seniors: int, members: List[Dict[str, Any]], split_method: str = "Equal Split") -> List[Dict[str, Any]]:
+def calculate_expense_split(total_budget: float, adults: int, children: int, seniors: int, members: List[Dict[str, Any]] = None, split_method: str = "Equal Split") -> List[Dict[str, Any]]:
     """
     Calculates individual shares and contribution balances.
+    When split_method contains 'adult', children pay 0.0 and only adults (+ seniors) share the total budget.
     """
     total_travelers = max(1, adults + children + seniors)
+    paying_travelers = max(1, adults + seniors)
     
-    if split_method == "Adults Only":
-        paying_count = max(1, adults)
-        per_paying_share = round(total_budget / paying_count, 2)
-    else:  # Equal Split or default
+    is_adults_only = "adult" in str(split_method).lower()
+    
+    if is_adults_only:
+        per_paying_share = round(total_budget / paying_travelers, 2)
+    else:
         per_paying_share = round(total_budget / total_travelers, 2)
 
     split_list = []
@@ -118,9 +127,12 @@ def calculate_expense_split(total_budget: float, adults: int, children: int, sen
     if members and len(members) > 0:
         for m in members:
             name = m.get("name", "Member")
-            is_child = m.get("age", 25) < 12
+            age = int(m.get("age", 25))
+            role = str(m.get("role", "")).strip()
             
-            if split_method == "Adults Only" and is_child:
+            is_child = (age < 18) or (role.lower() in ["child", "kid", "infant"])
+            
+            if is_adults_only and is_child:
                 share = 0.0
             else:
                 share = per_paying_share
@@ -131,7 +143,7 @@ def calculate_expense_split(total_budget: float, adults: int, children: int, sen
             
             split_list.append({
                 "name": name,
-                "role": m.get("role", "Member"),
+                "role": m.get("role", "Child" if is_child else "Member"),
                 "share": share,
                 "contribution": contrib,
                 "pending": pending,
@@ -139,16 +151,46 @@ def calculate_expense_split(total_budget: float, adults: int, children: int, sen
                 "refund": extra
             })
     else:
-        # Default placeholder breakdown
-        for i in range(1, total_travelers + 1):
+        # Generate default member roster according to adults, children, seniors composition
+        idx = 1
+        # Adults
+        for a in range(1, adults + 1):
+            role_label = "Organizer" if idx == 1 else "Adult Traveler"
             split_list.append({
-                "name": f"Traveler #{i}",
-                "role": "Organizer" if i == 1 else "Member",
+                "name": f"Adult #{a}",
+                "role": role_label,
                 "share": per_paying_share,
-                "contribution": per_paying_share if i == 1 else 0.0,
-                "pending": 0.0 if i == 1 else per_paying_share,
+                "contribution": total_budget if idx == 1 else 0.0,
+                "pending": 0.0 if idx == 1 else per_paying_share,
+                "extra": max(0.0, total_budget - per_paying_share) if idx == 1 else 0.0,
+                "refund": max(0.0, total_budget - per_paying_share) if idx == 1 else 0.0
+            })
+            idx += 1
+        # Seniors
+        for s in range(1, seniors + 1):
+            share = per_paying_share
+            split_list.append({
+                "name": f"Senior #{s}",
+                "role": "Senior Traveler",
+                "share": share,
+                "contribution": 0.0,
+                "pending": share,
                 "extra": 0.0,
                 "refund": 0.0
             })
+            idx += 1
+        # Children
+        for c in range(1, children + 1):
+            share = 0.0 if is_adults_only else per_paying_share
+            split_list.append({
+                "name": f"Child #{c}",
+                "role": "Child",
+                "share": share,
+                "contribution": 0.0,
+                "pending": share,
+                "extra": 0.0,
+                "refund": 0.0
+            })
+            idx += 1
 
     return split_list

@@ -20,8 +20,16 @@ const TripCard = ({ trip, onDelete, onViewDetails }) => {
           alt={trip.destination}
           className="w-full h-full object-cover"
         />
-        <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-xs px-2.5 py-1 rounded-xl text-[10px] font-bold text-white uppercase tracking-wider flex items-center">
-          {trip.travel_type}
+        <div className="absolute top-3 left-3 flex flex-col gap-1">
+          {trip.is_group_trip ? (
+            <span className="bg-emerald-600/90 backdrop-blur-xs px-2.5 py-1 rounded-xl text-[10px] font-black text-white uppercase tracking-wider flex items-center shadow-md">
+              👥 Group Trip ({trip.total_travelers || (trip.adults_count + (trip.children_count || 0) + (trip.seniors_count || 0))} PPL)
+            </span>
+          ) : (
+            <span className="bg-black/60 backdrop-blur-xs px-2.5 py-1 rounded-xl text-[10px] font-bold text-white uppercase tracking-wider flex items-center">
+              {trip.travel_type}
+            </span>
+          )}
         </div>
       </div>
 

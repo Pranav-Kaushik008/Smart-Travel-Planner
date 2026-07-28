@@ -5,7 +5,7 @@ from database.db import engine, Base
 from config import settings
 from sqlalchemy import text
 from database.seed import seed_hotels
-from routes import auth, planner, weather, trips, hotels, dashboard, profile, transport, support, group_planner
+from routes import auth, planner, weather, trips, hotels, dashboard, profile, transport, support, group_planner, admin as admin_router
 from services.recommendation_service import recommendation_engine
 import models  # Ensures all SQLAlchemy models are registered with Base.metadata
 
@@ -44,6 +44,28 @@ async def lifespan(app: FastAPI):
             except Exception as e:
                 print("Warning: failed to ensure trip expense columns:", e)
     print("Database tables verified/created.")
+
+    # Auto-promote the configured ADMIN_EMAIL user to is_admin=True on every startup
+    if settings.ADMIN_EMAIL:
+        try:
+            from database.db import AsyncSessionLocal
+            from sqlalchemy import select as sa_select
+            from models.user import User as UserModel
+            async with AsyncSessionLocal() as session:
+                result = await session.execute(
+                    sa_select(UserModel).where(UserModel.email == settings.ADMIN_EMAIL)
+                )
+                admin_user = result.scalars().first()
+                if admin_user and not admin_user.is_admin:
+                    admin_user.is_admin = True
+                    await session.commit()
+                    print(f"✅ Auto-promoted admin user on startup: {settings.ADMIN_EMAIL}")
+                elif admin_user:
+                    print(f"ℹ️  Admin already active: {settings.ADMIN_EMAIL}")
+                else:
+                    print(f"⚠️  Admin email '{settings.ADMIN_EMAIL}' not registered yet.")
+        except Exception as e:
+            print(f"Warning: admin auto-promotion failed: {e}")
 
     # Seed hotels
     await seed_hotels()
@@ -91,6 +113,7 @@ app.include_router(profile.router, prefix="/api")
 app.include_router(transport.router, prefix="/api")
 app.include_router(support.router, prefix="/api")
 app.include_router(group_planner.router, prefix="/api")
+app.include_router(admin_router.router, prefix="/api")
 
 
 @app.get("/")

@@ -98,14 +98,14 @@ const GroupDashboardView = ({ recommendation, groupState, accentTheme, groupTrip
             <FaMoneyBillWave className="text-emerald-500 text-xl" />
           </div>
           <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
-            ₹{recommendation.budget_per_person?.toLocaleString()} / Person
+            ₹{Number(recommendation.budget_per_person || 0).toLocaleString()} / Person
           </span>
         </div>
 
         <div className="glass-panel p-5 rounded-3xl border border-slate-200/60 dark:border-slate-800/80 bg-white/70 dark:bg-slate-900/70 space-y-1">
           <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Remaining Budget</span>
           <div className="flex items-center justify-between">
-            <h3 className="text-xl font-black text-indigo-500">₹{remainingGroupBudget.toLocaleString()}</h3>
+            <h3 className="text-xl font-black text-indigo-500">₹{Number(remainingGroupBudget || 0).toLocaleString()}</h3>
             <FaCalculator className="text-indigo-500 text-xl" />
           </div>
           <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 mt-1 overflow-hidden">
@@ -116,11 +116,11 @@ const GroupDashboardView = ({ recommendation, groupState, accentTheme, groupTrip
         <div className="glass-panel p-5 rounded-3xl border border-slate-200/60 dark:border-slate-800/80 bg-white/70 dark:bg-slate-900/70 space-y-1">
           <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Daily Target Spend</span>
           <div className="flex items-center justify-between">
-            <h3 className="text-xl font-black text-amber-500">₹{recommendation.expected_daily_spending?.toLocaleString()}</h3>
+            <h3 className="text-xl font-black text-amber-500">₹{Number(recommendation.expected_daily_spending || 0).toLocaleString()}</h3>
             <FaChartPie className="text-amber-500 text-xl" />
           </div>
           <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
-            ₹{recommendation.average_cost_per_day_person?.toLocaleString()} / Person / Day
+            ₹{Number(recommendation.average_cost_per_day_person || 0).toLocaleString()} / Person / Day
           </span>
         </div>
       </div>
@@ -227,10 +227,22 @@ const GroupDashboardView = ({ recommendation, groupState, accentTheme, groupTrip
                 <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-950/40 transition-colors">
                   <td className="py-3 font-extrabold">{row.name}</td>
                   <td className="py-3 text-slate-400">{row.role}</td>
-                  <td className="py-3 text-sky-500 font-bold">₹{row.share?.toLocaleString()}</td>
+                  <td className="py-3 text-sky-500 font-bold">
+                    {row.share === 0 ? (
+                      <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md text-[11px] font-black">
+                        ₹0 (Children Free)
+                      </span>
+                    ) : (
+                      `₹${row.share?.toLocaleString()}`
+                    )}
+                  </td>
                   <td className="py-3 text-emerald-500 font-bold">₹{row.contribution?.toLocaleString()}</td>
                   <td className="py-3">
-                    {row.pending > 0 ? (
+                    {row.share === 0 ? (
+                      <span className="text-emerald-600 dark:text-emerald-400 font-extrabold bg-emerald-500/10 px-2.5 py-1 rounded-lg">
+                        ✅ Free (Children)
+                      </span>
+                    ) : row.pending > 0 ? (
                       <span className="text-amber-500 font-bold bg-amber-500/10 px-2.5 py-1 rounded-lg">
                         Pending: ₹{row.pending?.toLocaleString()}
                       </span>

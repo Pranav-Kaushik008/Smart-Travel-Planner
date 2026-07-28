@@ -25,6 +25,21 @@ import toast from "react-hot-toast";
 
 const MAX_BIO = 300;
 
+const getEmptyProfile = () => ({
+  full_name: "",
+  email: "",
+  profile_pic: "",
+  phone: "",
+  location: "",
+  dob: "",
+  bio: "",
+  interests: [],
+  favorite_destinations: [],
+  languages: [],
+  travel_style: "Boutique",
+  preferred_season: "All"
+});
+
 // Random beautiful cover images matching travel themes
 const COVER_IMAGES = [
   "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1200&q=80", // Road trip
@@ -45,44 +60,33 @@ const ProfilePage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [showPhotoViewer, setShowPhotoViewer] = useState(false);
 
-  const [profile, setProfile] = useState({
-    full_name: "",
-    email: "",
-    profile_pic: "",
-    phone: "",
-    location: "",
-    dob: "",
-    bio: "",
-    interests: [],
-    favorite_destinations: [],
-    languages: [],
-    travel_style: "Boutique", // Boutique, Luxury, Backpacker, Adventure
-    preferred_season: "All"   // Summer, Winter, Monsoon, All
-  });
+  const [profile, setProfile] = useState(getEmptyProfile);
 
   const [edited, setEdited] = useState(null);
 
   useEffect(() => {
-    if (!user) return;
-    
-    // Load local storage extras as fallback, but prefer backend fields
-    const localExtra = JSON.parse(localStorage.getItem("profile_extra") || "null") || {};
-    
+    if (!user) {
+      setProfile(getEmptyProfile());
+      setEdited(null);
+      setLoading(false);
+      return;
+    }
+
     setProfile({
       full_name: user.full_name || user.username || "",
       email: user.email || "",
-      profile_pic: user.profile_pic || localExtra.profile_pic || "",
-      phone: user.phone || localExtra.phone || "",
-      location: user.location || localExtra.location || "",
-      dob: user.dob || localExtra.dob || "",
-      bio: user.bio || localExtra.bio || "",
-      interests: user.interests || localExtra.interests || [],
-      favorite_destinations: user.favorite_destinations || localExtra.favorite_destinations || [],
-      languages: user.languages || localExtra.languages || [],
-      travel_style: user.travel_style || localExtra.travel_style || "Boutique",
-      preferred_season: user.preferred_season || localExtra.preferred_season || "All"
+      profile_pic: user.profile_pic || "",
+      phone: user.phone || "",
+      location: user.location || "",
+      dob: user.dob || "",
+      bio: user.bio || "",
+      interests: user.interests || [],
+      favorite_destinations: user.favorite_destinations || [],
+      languages: user.languages || [],
+      travel_style: user.travel_style || "Boutique",
+      preferred_season: user.preferred_season || "All"
     });
-    
+
     setLoading(false);
   }, [user]);
 
@@ -153,12 +157,6 @@ const ProfilePage = () => {
         const serverUser = res.data;
         updateUser(serverUser);
 
-        const localExtra = JSON.parse(localStorage.getItem("profile_extra") || "null") || {};
-        localStorage.setItem("profile_extra", JSON.stringify({
-          ...localExtra,
-          profile_pic: base64Data
-        }));
-
         setProfile((prev) => ({
           ...prev,
           profile_pic: serverUser.profile_pic || base64Data
@@ -200,20 +198,6 @@ const ProfilePage = () => {
       const res = await api.put("/profile", payload);
       const serverUser = res.data;
       updateUser(serverUser);
-
-      // Sync to local storage for backwards compatibility
-      localStorage.setItem("profile_extra", JSON.stringify({
-        profile_pic: payload.profile_pic,
-        phone: payload.phone,
-        location: payload.location,
-        dob: payload.dob,
-        bio: payload.bio,
-        interests: payload.interests,
-        favorite_destinations: payload.favorite_destinations,
-        languages: payload.languages,
-        travel_style: payload.travel_style,
-        preferred_season: payload.preferred_season
-      }));
 
       setProfile({
         ...profile,

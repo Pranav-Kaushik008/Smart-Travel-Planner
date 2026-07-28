@@ -28,6 +28,7 @@ api.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 401) {
       localStorage.removeItem("token");
+      localStorage.removeItem("profile_extra");
       if (window.location.pathname !== "/login" && window.location.pathname !== "/register" && window.location.pathname !== "/") {
         window.location.href = "/login?expired=true";
       }

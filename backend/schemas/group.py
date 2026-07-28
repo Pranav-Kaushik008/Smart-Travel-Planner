@@ -35,6 +35,7 @@ class GroupTravelRequest(BaseModel):
     seniors_count: int = Field(default=0, ge=0)
     
     # Core Preferences
+    destination: Optional[str] = None
     days: int = Field(..., ge=1)
     travel_type: str = Field(..., description="Beach, Adventure, Historical, Nature, Religious, Wildlife")
     season: str = Field(..., description="Summer, Winter, Monsoon, All")

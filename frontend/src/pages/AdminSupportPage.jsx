@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "../api/axios";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 import LoadingSpinner from "../components/LoadingSpinner";
 import {
   FaUserShield,
@@ -16,13 +18,20 @@ import {
   FaExclamationTriangle,
   FaSpinner,
   FaEnvelope,
-  FaTag
+  FaTag,
+  FaLock,
+  FaUsers
 } from "react-icons/fa";
 import toast from "react-hot-toast";
 
 const AdminSupportPage = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const isAdmin = user?.is_admin === true;
+
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [accessDenied, setAccessDenied] = useState(false);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [priorityFilter, setPriorityFilter] = useState("All");
@@ -38,7 +47,8 @@ const AdminSupportPage = () => {
   const fetchAllTickets = async () => {
     setLoading(true);
     try {
-      const response = await api.get("/support");
+      // Use the admin-specific endpoint that bypasses user scoping
+      const response = await api.get("/admin/tickets");
       setTickets(response.data);
       if (selectedTicket) {
         const updatedSelected = response.data.find((t) => t.ticket_number === selectedTicket.ticket_number);
@@ -50,8 +60,12 @@ const AdminSupportPage = () => {
         }
       }
     } catch (error) {
-      console.error("Error fetching admin support tickets:", error);
-      toast.error("Failed to load admin support tickets.");
+      if (error?.response?.status === 403) {
+        setAccessDenied(true);
+      } else {
+        console.error("Error fetching admin support tickets:", error);
+        toast.error("Failed to load admin support tickets.");
+      }
     } finally {
       setLoading(false);
     }
@@ -80,15 +94,19 @@ const AdminSupportPage = () => {
         status: statusState
       };
 
-      const response = await api.patch(`/support/${selectedTicket.ticket_number}`, payload);
+      const response = await api.patch(`/admin/tickets/${selectedTicket.ticket_number}`, payload);
       toast.success(`Ticket #${selectedTicket.ticket_number} updated successfully!`);
       if (payload.status === "Resolved") {
-        toast.success("Resolution email notification triggered via Resend API.");
+        toast.success("Resolution email notification triggered.");
       }
       fetchAllTickets();
     } catch (error) {
-      console.error("Error updating ticket:", error);
-      toast.error("Failed to update ticket.");
+      if (error?.response?.status === 403) {
+        toast.error("Access denied. Admin only.");
+      } else {
+        console.error("Error updating ticket:", error);
+        toast.error("Failed to update ticket.");
+      }
     } finally {
       setUpdating(false);
     }
@@ -101,15 +119,19 @@ const AdminSupportPage = () => {
 
     setDeleting(true);
     try {
-      await api.delete(`/support/${ticketNumber}`);
+      await api.delete(`/admin/tickets/${ticketNumber}`);
       toast.success(`Ticket #${ticketNumber} deleted.`);
       if (selectedTicket?.ticket_number === ticketNumber) {
         setSelectedTicket(null);
       }
       fetchAllTickets();
     } catch (error) {
-      console.error("Error deleting ticket:", error);
-      toast.error("Failed to delete ticket.");
+      if (error?.response?.status === 403) {
+        toast.error("Access denied. Admin only.");
+      } else {
+        console.error("Error deleting ticket:", error);
+        toast.error("Failed to delete ticket.");
+      }
     } finally {
       setDeleting(false);
     }
@@ -181,6 +203,32 @@ const AdminSupportPage = () => {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
         <LoadingSpinner message="Loading support ticket management console..." />
+      </div>
+    );
+  }
+
+  // Access denied screen — styled like premium SaaS dashboards
+  if (accessDenied || !isAdmin) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[70vh] p-8 animate-fadeIn">
+        <div className="text-center max-w-md glass-panel p-10 rounded-3xl border border-rose-500/20 bg-white/70 dark:bg-slate-900/70 shadow-2xl">
+          <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-tr from-rose-500 to-orange-500 flex items-center justify-center text-white text-3xl shadow-lg shadow-rose-500/30">
+            <FaLock />
+          </div>
+          <h1 className="text-2xl font-black text-slate-900 dark:text-white mb-3">Admin Access Only</h1>
+          <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-6">
+            This page is restricted to system administrators. Your account does not have admin privileges.
+          </p>
+          <div className="p-4 rounded-2xl bg-rose-500/8 border border-rose-500/20 text-xs font-bold text-rose-600 dark:text-rose-400 mb-6">
+            🔒 Only the system administrator (pranavynk@gmail.com) can access the Support Management Console.
+          </div>
+          <button
+            onClick={() => navigate("/support-history")}
+            className="w-full py-3 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-black text-sm shadow-lg hover:from-indigo-600 hover:to-purple-700 transition-all"
+          >
+            View My Support Tickets
+          </button>
+        </div>
       </div>
     );
   }

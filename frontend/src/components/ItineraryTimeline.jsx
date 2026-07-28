@@ -87,7 +87,8 @@ const ItineraryTimeline = ({ itinerary }) => {
 
   // Format bold markdown text inside list items nicely
   const formatText = (text) => {
-    return text.replace(/\*\*/g, "").replace(/^\*+|\*+$/g, "").trim();
+    if (!text) return "";
+    return String(text).replace(/\*\*/g, "").replace(/^\*+|\*+$/g, "").trim();
   };
 
   // Render nicely formatted fallback if days array couldn't be parsed

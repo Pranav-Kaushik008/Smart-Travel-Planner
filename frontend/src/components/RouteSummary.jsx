@@ -1,5 +1,5 @@
 import React from "react";
-import { FaMapMarkerAlt, FaRoute, FaCar, FaClock } from "react-icons/fa";
+import { FaMapMarkerAlt, FaRoute, FaCar, FaClock, FaPlane, FaShip, FaExclamationTriangle } from "react-icons/fa";
 
 const RouteSummary = ({ route }) => {
   if (!route) {
@@ -17,7 +17,16 @@ const RouteSummary = ({ route }) => {
     );
   }
 
-  const { origin_city, origin_state, dest_city, distance_km, duration_text, route_summary } = route;
+  const {
+    origin_city = "Origin",
+    origin_state = "",
+    dest_city = "Destination",
+    distance_km = 0,
+    duration_text = "--",
+    route_summary = "Direct route available",
+    road_accessible = true
+  } = route || {};
+  const isIsland = road_accessible === false || (dest_city && dest_city.toLowerCase().includes("andaman")) || (dest_city && dest_city.toLowerCase().includes("lakshadweep"));
 
   return (
     <div className="glass-panel p-6 rounded-3xl border border-slate-200/50 dark:border-slate-800/80 bg-white/70 dark:bg-slate-900/60 shadow-lg hover:shadow-xl transition-all duration-300">
@@ -25,9 +34,15 @@ const RouteSummary = ({ route }) => {
         <h3 className="font-bold text-slate-800 dark:text-white flex items-center gap-2 text-sm uppercase tracking-wider">
           <FaRoute className="text-sky-500 text-lg" /> Route Information
         </h3>
-        <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 flex items-center gap-1.5">
-          <FaCar className="text-[10px]" /> Best by Road
-        </span>
+        {isIsland ? (
+          <span className="text-xs font-bold px-3 py-1 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/20 flex items-center gap-1.5 animate-pulse">
+            <FaPlane className="text-[11px]" /> Air / Sea Travel Required
+          </span>
+        ) : (
+          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 flex items-center gap-1.5">
+            <FaCar className="text-[10px]" /> Best by Road
+          </span>
+        )}
       </div>
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">

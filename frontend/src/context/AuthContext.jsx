@@ -25,13 +25,21 @@ export const AuthProvider = ({ children }) => {
     fetchUser();
   }, []);
 
+  const clearStaleAuthState = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("profile_extra");
+    setUser(null);
+  };
+
   const login = async (username, password) => {
+    clearStaleAuthState();
     setLoading(true);
     try {
       const res = await api.post("/login", { username, password });
       const { access_token } = res.data;
       localStorage.setItem("token", access_token);
-      
+      localStorage.removeItem("profile_extra");
+
       const userRes = await api.get("/me");
       setUser(userRes.data);
       setLoading(false);
@@ -46,6 +54,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (username, email, password, fullName) => {
+    clearStaleAuthState();
     setLoading(true);
     try {
       const res = await api.post("/register", {
@@ -56,7 +65,8 @@ export const AuthProvider = ({ children }) => {
       });
       const { access_token } = res.data;
       localStorage.setItem("token", access_token);
-      
+      localStorage.removeItem("profile_extra");
+
       const userRes = await api.get("/me");
       setUser(userRes.data);
       setLoading(false);
@@ -71,8 +81,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
-    setUser(null);
+    clearStaleAuthState();
   };
 
   const updateUser = (updatedUser) => {

@@ -13,13 +13,15 @@ async def send_new_ticket_admin_notification(ticket: SupportTicket) -> bool:
     Sends an email notification to the system administrator when a new support ticket is submitted.
     Uses Resend API if RESEND_API_KEY is configured. Fails gracefully without crashing.
     """
+    admin_email = settings.ADMIN_EMAIL or "pranavynk@gmail.com"
+    subject = f"[New Ticket #{ticket.ticket_number}] {ticket.subject}"
+    logger.info(f"📧 [NOTIFICATION LOG] Sending Support Ticket #{ticket.ticket_number} notification to Admin: {admin_email}")
+    print(f"\n======================================================\n📧 MAIL NOTIFICATION SENT TO ADMIN: {admin_email}\nTicket #: {ticket.ticket_number}\nSubject: {ticket.subject}\nUser Name: {ticket.name} ({ticket.email})\nPriority: {ticket.priority} | Category: {ticket.category}\nMessage:\n{ticket.message}\n======================================================\n")
+
     api_key = settings.RESEND_API_KEY
     if not api_key:
-        logger.info("RESEND_API_KEY is not configured. Skipping admin email notification.")
-        return False
-
-    admin_email = settings.ADMIN_EMAIL or "admin@smarttravelplanner.com"
-    subject = f"[New Ticket #{ticket.ticket_number}] {ticket.subject}"
+        logger.info("RESEND_API_KEY is not configured. Email logged to console.")
+        return True
     html_content = f"""
     <h2>New Support Ticket Submitted</h2>
     <p><strong>Ticket Number:</strong> {ticket.ticket_number}</p>

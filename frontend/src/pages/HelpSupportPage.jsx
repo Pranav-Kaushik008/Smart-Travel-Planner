@@ -393,10 +393,7 @@ const HelpSupportPage = () => {
               <FaEnvelope className="text-sky-500 text-sm shrink-0" />
               <span>pranavkaushikyr@gmail.com</span>
             </div>
-            <div className="flex items-center space-x-3 text-xs font-bold text-slate-700 dark:text-slate-300">
-              <FaPhoneAlt className="text-emerald-500 text-sm shrink-0" />
-              <span>+91 9980254247</span>
-            </div>
+            
             <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] font-bold text-slate-400">
               <span>Avg Response Time:</span>
               <span className="text-emerald-500 font-extrabold">&lt; 2 Hours</span>

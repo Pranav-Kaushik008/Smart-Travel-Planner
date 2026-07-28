@@ -27,8 +27,8 @@ const getCleartripUrl = (origin, dest, date) => {
   return `https://www.cleartrip.com/flights/results?from=${origin}&to=${dest}&depart_date=${formattedDate}&adults=1&childs=0&infants=0&class=Economy`;
 };
 
-const FlightCard = ({ flight, airportNote = null }) => {
-  const { airline, flight_number, departure, arrival, duration, stops, logo_url, booking_url, origin_iata, dest_iata, date } = flight;
+const FlightCard = ({ flight = {}, airportNote = null }) => {
+  const { airline = "Airline", flight_number = "--", departure = "--", arrival = "--", duration = "--", stops = 0, logo_url, booking_url = "#", origin_iata = "DEL", dest_iata = "BOM", date = "" } = flight || {};
 
   // Render initials inside a colored block if logo_url is missing
   const renderLogo = () => {
@@ -37,7 +37,7 @@ const FlightCard = ({ flight, airportNote = null }) => {
     }
     return (
       <div className="w-9 h-9 rounded-xl bg-sky-500/10 flex items-center justify-center text-sky-500 font-extrabold text-sm uppercase">
-        {airline.substring(0, 2)}
+        {(airline || "AL").substring(0, 2)}
       </div>
     );
   };

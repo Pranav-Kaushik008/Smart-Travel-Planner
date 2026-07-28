@@ -7,6 +7,7 @@ from models.user import User
 from schemas.auth import UserCreate, UserLogin, Token, UserResponse
 from services.auth_service import hash_password, verify_password, create_access_token
 from middleware.auth_middleware import get_current_user
+from config import settings
 
 router = APIRouter(tags=["Authentication"])
 
@@ -64,5 +65,16 @@ async def login(credentials: UserLogin, db: AsyncSession = Depends(get_db)):
     return {"access_token": token, "token_type": "bearer"}
 
 @router.get("/me", response_model=UserResponse)
-async def read_users_me(current_user: User = Depends(get_current_user)):
+async def read_users_me(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    """
+    Returns the currently authenticated user.
+    Auto-promotes user to admin if their email matches the configured ADMIN_EMAIL.
+    """
+    # Auto-promote to admin if this is the configured admin email
+    if settings.ADMIN_EMAIL and current_user.email == settings.ADMIN_EMAIL and not current_user.is_admin:
+        current_user.is_admin = True
+        db.add(current_user)
+        await db.commit()
+        await db.refresh(current_user)
+        print(f"✅ Auto-promoted admin on login: {current_user.email}")
     return current_user

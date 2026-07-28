@@ -100,7 +100,8 @@ async def group_recommend(
     
     transport_plan = group_service.calculate_transport_plan(
         total_travelers=total_travelers,
-        days=req.days
+        days=req.days,
+        destination=destination
     )
     
     emergency_directory = group_service.get_emergency_directory(destination)
@@ -124,9 +125,12 @@ async def group_recommend(
         split_method=req.split_method
     )
     
-    budget_per_person = round(req.total_budget / total_travelers, 2)
+    is_adults_only = "adult" in str(req.split_method).lower()
+    paying_count = max(1, req.adults_count + req.seniors_count) if is_adults_only else total_travelers
+    
+    budget_per_person = round(req.total_budget / paying_count, 2)
     expected_daily_spending = round(req.total_budget / max(1, req.days), 2)
-    avg_cost_per_day_person = round(expected_daily_spending / total_travelers, 2)
+    avg_cost_per_day_person = round(expected_daily_spending / paying_count, 2)
     
     return GroupRecommendationResponse(
         destination=destination,
@@ -155,8 +159,8 @@ async def group_itinerary(
     total_travelers = max(1, req.adults_count + req.children_count + req.seniors_count)
     per_person_budget = req.total_budget / total_travelers
     
-    # Predict destination first if not supplied
-    destination = recommendation_engine.predict(
+    # Use requested destination or predict destination
+    destination = req.destination or recommendation_engine.predict(
         budget=per_person_budget,
         days=req.days,
         travel_type=req.travel_type,

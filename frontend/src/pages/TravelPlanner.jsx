@@ -32,31 +32,31 @@ const TravelPlanner = () => {
   const [planMode, setPlanMode] = useState("individual");
 
   // Form states (shared between both modes)
-  const [budget, setBudget] = useState("");
-  const [days, setDays] = useState("");
-  const [travelType, setTravelType] = useState("");
-  const [season, setSeason] = useState("");
+  const [budget, setBudget] = useState("20000");
+  const [days, setDays] = useState("4");
+  const [travelType, setTravelType] = useState("Beach");
+  const [season, setSeason] = useState("Winter");
 
   // Group-specific state
   const [groupState, setGroupState] = useState({
-    group_name: "",
-    organizer_name: user?.full_name || user?.username || "",
+    group_name: "Group Vacation",
+    organizer_name: user?.full_name || user?.username || "Organizer",
     relationship_type: "Friends",
     adults_count: 2,
     children_count: 0,
     seniors_count: 0,
-    total_budget: "",
-    accommodation_budget: "",
-    food_budget: "",
-    transport_budget: "",
-    activities_budget: "",
-    shopping_budget: "",
-    emergency_fund: "",
-    misc_budget: "",
+    total_budget: 40000,
+    accommodation_budget: 15000,
+    food_budget: 10000,
+    transport_budget: 8000,
+    activities_budget: 5000,
+    shopping_budget: 0,
+    emergency_fund: 2000,
+    misc_budget: 0,
     split_method: "Equal Split",
     special_requirements: [],
     members: [],
-    days: 3
+    days: 4
   });
   const [groupRecommendation, setGroupRecommendation] = useState(null);
   const [groupItinerary, setGroupItinerary] = useState("");
@@ -156,11 +156,12 @@ const TravelPlanner = () => {
     }
   };
 
-  const fetchTravelDetails = async (destination) => {
+  const fetchTravelDetails = async (destination, overrideBudget = null) => {
     setLoadingRoute(true);
     setLoadingAttractions(true);
     let resolvedOriginCity = "Bengaluru";
     let calculatedDistance = 500.0;
+    const effectiveBudget = overrideBudget ? Number(overrideBudget) : (Number(budget) || 20000);
 
     try {
       const routeRes = await api.get("/routes/directions", {
@@ -183,7 +184,7 @@ const TravelPlanner = () => {
 
     setLoadingFlights(true);
     api.get("/flights", {
-      params: { origin: resolvedOriginCity, destination: destination, budget: Number(budget) }
+      params: { origin: resolvedOriginCity, destination: destination, budget: effectiveBudget }
     }).then(res => {
       setFlights(res.data.flights);
       setAirportNote(res.data.airport_note || null);
@@ -362,7 +363,7 @@ const TravelPlanner = () => {
       toast.success(`Group destination: ${res.data.destination}! Room & Transport plans ready.`);
 
       // Also fetch individual travel details for transport comparison
-      fetchTravelDetails(res.data.destination);
+      fetchTravelDetails(res.data.destination, Number(groupState.total_budget));
     } catch (err) {
       console.error("Group recommendation error", err);
       const detail = err.response?.data?.detail;
@@ -379,18 +380,19 @@ const TravelPlanner = () => {
     setLoadingGroupItinerary(true);
     try {
       const payload = {
-        group_name: groupState.group_name,
-        organizer_name: groupState.organizer_name,
-        relationship_type: groupState.relationship_type,
-        adults_count: groupState.adults_count,
-        children_count: groupState.children_count,
-        seniors_count: groupState.seniors_count,
-        days: Number(days),
-        travel_type: travelType,
-        season: season,
-        total_budget: Number(groupState.total_budget) || 0,
-        split_method: groupState.split_method,
-        special_requirements: groupState.special_requirements
+        destination: groupRecommendation.destination,
+        group_name: groupState.group_name || "Group Trip",
+        organizer_name: groupState.organizer_name || "Organizer",
+        relationship_type: groupState.relationship_type || "Friends",
+        adults_count: Number(groupState.adults_count) || 1,
+        children_count: Number(groupState.children_count) || 0,
+        seniors_count: Number(groupState.seniors_count) || 0,
+        days: Number(days) || 1,
+        travel_type: travelType || "Beach",
+        season: season || "Summer",
+        total_budget: Number(groupState.total_budget) || 1000,
+        split_method: groupState.split_method || "Equal Split",
+        special_requirements: groupState.special_requirements || []
       };
 
       const res = await api.post("/group/generate-itinerary", payload);
@@ -409,7 +411,7 @@ const TravelPlanner = () => {
 
     setSavingGroupTrip(true);
     try {
-      const totalTravelers = groupState.adults_count + groupState.children_count + groupState.seniors_count;
+      const totalTravelers = Number(groupState.adults_count || 1) + Number(groupState.children_count || 0) + Number(groupState.seniors_count || 0);
       const data = {
         group_name: groupState.group_name || "Group Trip",
         organizer_name: groupState.organizer_name,
@@ -883,6 +885,29 @@ const TravelPlanner = () => {
             accentTheme={accentTheme}
             groupTripId={groupTripId}
           />
+
+          {/* Group Inter-City Transport & Route Summary Section */}
+          <div className="space-y-8">
+            <RouteSummary route={route} />
+            
+            <div className="space-y-4">
+              <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                <FaSuitcase className="text-indigo-500" /> Compare Group Ticketing Options (Flights, Trains, Buses)
+              </h3>
+              <TransportTabs
+                flights={flights}
+                trains={trains}
+                buses={buses}
+                loadingFlights={loadingFlights}
+                loadingTrains={loadingTrains}
+                loadingBuses={loadingBuses}
+                errors={errors}
+                airportNote={airportNote}
+                trainTransitNote={trainTransitNote}
+                busTransitNote={busTransitNote}
+              />
+            </div>
+          </div>
 
           {/* Group AI Itinerary Section */}
           <div className="glass-panel p-6 rounded-3xl border border-slate-200/60 dark:border-slate-800/80 bg-white/70 dark:bg-slate-900/70 flex flex-col items-center text-center space-y-5">

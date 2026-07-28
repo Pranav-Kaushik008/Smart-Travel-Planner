@@ -2,10 +2,10 @@ import React from "react";
 import { FaMapPin } from "react-icons/fa";
 
 const AttractionCard = ({ attraction }) => {
-  const { name, description, image_url, category } = attraction;
+  const { name = "Attraction", description = "", image_url = "", category = "Sightseeing" } = attraction || {};
 
   const getCategoryColor = () => {
-    switch (category.toLowerCase()) {
+    switch ((category || "").toLowerCase()) {
       case "beach":
         return "bg-sky-500/10 text-sky-500 border-sky-500/20";
       case "nature":

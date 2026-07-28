@@ -1,11 +1,11 @@
 import React from "react";
 import { FaBus, FaClock, FaStar, FaExternalLinkAlt, FaWifi, FaBolt, FaCoffee, FaMapMarkerAlt } from "react-icons/fa";
 
-const BusCard = ({ bus }) => {
-  const { operator, bus_type, departure, arrival, duration, amenities, seats_available, price, rating, booking_url } = bus;
+const BusCard = ({ bus = {} }) => {
+  const { operator = "Bus Operator", bus_type = "Express", departure = "--", arrival = "--", duration = "--", amenities = [], seats_available = 10, price = 0, rating = 4.5, booking_url = "#" } = bus || {};
 
   const renderAmenityIcon = (amenity) => {
-    const norm = amenity.toLowerCase();
+    const norm = (amenity || "").toLowerCase();
     if (norm.includes("wifi")) return <FaWifi title="WiFi Available" className="text-slate-400 hover:text-sky-500 transition-colors" />;
     if (norm.includes("charge") || norm.includes("usb")) return <FaBolt title="USB Charging Available" className="text-slate-400 hover:text-amber-500 transition-colors" />;
     if (norm.includes("water")) return <FaCoffee title="Water Bottle Provided" className="text-slate-400 hover:text-blue-400 transition-colors" />;
