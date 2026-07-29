@@ -32,31 +32,31 @@ const TravelPlanner = () => {
   const [planMode, setPlanMode] = useState("individual");
 
   // Form states (shared between both modes)
-  const [budget, setBudget] = useState("20000");
-  const [days, setDays] = useState("4");
-  const [travelType, setTravelType] = useState("Beach");
-  const [season, setSeason] = useState("Winter");
+  const [budget, setBudget] = useState("");
+  const [days, setDays] = useState("");
+  const [travelType, setTravelType] = useState("");
+  const [season, setSeason] = useState("");
 
   // Group-specific state
   const [groupState, setGroupState] = useState({
-    group_name: "Group Vacation",
-    organizer_name: user?.full_name || user?.username || "Organizer",
-    relationship_type: "Friends",
+    group_name: "",
+    organizer_name: user?.full_name || user?.username || "",
+    relationship_type: "",
     adults_count: 2,
     children_count: 0,
     seniors_count: 0,
-    total_budget: 40000,
-    accommodation_budget: 15000,
-    food_budget: 10000,
-    transport_budget: 8000,
-    activities_budget: 5000,
+    total_budget: "",
+    accommodation_budget: "",
+    food_budget: "",
+    transport_budget: "",
+    activities_budget: "",
     shopping_budget: 0,
-    emergency_fund: 2000,
+    emergency_fund: "",
     misc_budget: 0,
     split_method: "Equal Split",
     special_requirements: [],
     members: [],
-    days: 4
+    days: ""
   });
   const [groupRecommendation, setGroupRecommendation] = useState(null);
   const [groupItinerary, setGroupItinerary] = useState("");

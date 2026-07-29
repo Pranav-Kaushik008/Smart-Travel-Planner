@@ -23,3 +23,10 @@ class DashboardAnalytics(BaseModel):
     budget_breakdown: List[BudgetAnalytics]
     actual_breakdown: List[BudgetAnalytics]  # Sum of actual expenses by category
     trips_over_time: List[TripMonthAnalytics]
+    # Group trip stats
+    total_group_trips: int = 0
+    total_group_travelers: int = 0
+    avg_group_size: float = 0.0
+    total_group_budget: float = 0.0
+    group_destinations: List[PopularDestination] = []
+    group_budget_breakdown: List[BudgetAnalytics] = []
