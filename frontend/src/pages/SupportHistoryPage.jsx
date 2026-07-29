@@ -340,61 +340,58 @@ const SupportHistoryPage = () => {
                   )}
                 </div>
 
-                {/* Ticket User Actions */}
-                <div className="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2">
-                  {/* Update Status Label */}
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Update Status</span>
+                {/* Admin Status Modification Actions — Admin Only */}
+                {user?.is_admin && (
+                  <div className="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Update Status (Admin Only)</span>
 
-                  <div className="grid grid-cols-2 gap-2">
-                    {/* Mark as In Progress — show when Open or Closed */}
-                    {(selectedTicket.status === "Open" || selectedTicket.status === "Closed" || selectedTicket.status === "Resolved") && (
-                      <button
-                        disabled={actionLoading}
-                        onClick={() => handleUpdateStatus(selectedTicket.ticket_number, "In Progress")}
-                        className="flex items-center justify-center space-x-1.5 py-2.5 rounded-xl bg-sky-500/10 hover:bg-sky-500 hover:text-white text-sky-600 dark:text-sky-400 font-extrabold text-xs transition-all border border-sky-500/20 disabled:opacity-50"
-                      >
-                        <FaTicketAlt className="text-[10px]" />
-                        <span>{selectedTicket.status === "Resolved" || selectedTicket.status === "Closed" ? "Reopen" : "In Progress"}</span>
-                      </button>
-                    )}
+                    <div className="grid grid-cols-2 gap-2">
+                      {(selectedTicket.status === "Open" || selectedTicket.status === "Closed" || selectedTicket.status === "Resolved") && (
+                        <button
+                          disabled={actionLoading}
+                          onClick={() => handleUpdateStatus(selectedTicket.ticket_number, "In Progress")}
+                          className="flex items-center justify-center space-x-1.5 py-2.5 rounded-xl bg-sky-500/10 hover:bg-sky-500 hover:text-white text-sky-600 dark:text-sky-400 font-extrabold text-xs transition-all border border-sky-500/20 disabled:opacity-50"
+                        >
+                          <FaTicketAlt className="text-[10px]" />
+                          <span>{selectedTicket.status === "Resolved" || selectedTicket.status === "Closed" ? "Reopen" : "In Progress"}</span>
+                        </button>
+                      )}
 
-                    {/* Mark as Resolved — show when Open or In Progress */}
-                    {(selectedTicket.status === "Open" || selectedTicket.status === "In Progress") && (
-                      <button
-                        disabled={actionLoading}
-                        onClick={() => handleUpdateStatus(selectedTicket.ticket_number, "Resolved")}
-                        className="flex items-center justify-center space-x-1.5 py-2.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500 hover:text-white text-emerald-600 dark:text-emerald-400 font-extrabold text-xs transition-all border border-emerald-500/20 disabled:opacity-50"
-                      >
-                        <FaCheckCircle className="text-[10px]" />
-                        <span>Resolved</span>
-                      </button>
-                    )}
+                      {(selectedTicket.status === "Open" || selectedTicket.status === "In Progress") && (
+                        <button
+                          disabled={actionLoading}
+                          onClick={() => handleUpdateStatus(selectedTicket.ticket_number, "Resolved")}
+                          className="flex items-center justify-center space-x-1.5 py-2.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500 hover:text-white text-emerald-600 dark:text-emerald-400 font-extrabold text-xs transition-all border border-emerald-500/20 disabled:opacity-50"
+                        >
+                          <FaCheckCircle className="text-[10px]" />
+                          <span>Resolved</span>
+                        </button>
+                      )}
 
-                    {/* Close Ticket — show when not already Closed */}
-                    {selectedTicket.status !== "Closed" && (
-                      <button
-                        disabled={actionLoading}
-                        onClick={() => handleUpdateStatus(selectedTicket.ticket_number, "Closed")}
-                        className="flex items-center justify-center space-x-1.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-rose-500 hover:text-white text-slate-600 dark:text-slate-300 font-extrabold text-xs transition-all border border-slate-200 dark:border-slate-700 disabled:opacity-50"
-                      >
-                        <FaTimesCircle className="text-[10px]" />
-                        <span>Close</span>
-                      </button>
-                    )}
+                      {selectedTicket.status !== "Closed" && (
+                        <button
+                          disabled={actionLoading}
+                          onClick={() => handleUpdateStatus(selectedTicket.ticket_number, "Closed")}
+                          className="flex items-center justify-center space-x-1.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-rose-500 hover:text-white text-slate-600 dark:text-slate-300 font-extrabold text-xs transition-all border border-slate-200 dark:border-slate-700 disabled:opacity-50"
+                        >
+                          <FaTimesCircle className="text-[10px]" />
+                          <span>Close</span>
+                        </button>
+                      )}
 
-                    {/* Reopen to Open — show when Closed */}
-                    {selectedTicket.status === "Closed" && (
-                      <button
-                        disabled={actionLoading}
-                        onClick={() => handleUpdateStatus(selectedTicket.ticket_number, "Open")}
-                        className="flex items-center justify-center space-x-1.5 py-2.5 rounded-xl bg-amber-500/10 hover:bg-amber-500 hover:text-white text-amber-600 dark:text-amber-400 font-extrabold text-xs transition-all border border-amber-500/20 disabled:opacity-50"
-                      >
-                        <FaUndo className="text-[10px]" />
-                        <span>Open</span>
-                      </button>
-                    )}
+                      {selectedTicket.status === "Closed" && (
+                        <button
+                          disabled={actionLoading}
+                          onClick={() => handleUpdateStatus(selectedTicket.ticket_number, "Open")}
+                          className="flex items-center justify-center space-x-1.5 py-2.5 rounded-xl bg-amber-500/10 hover:bg-amber-500 hover:text-white text-amber-600 dark:text-amber-400 font-extrabold text-xs transition-all border border-amber-500/20 disabled:opacity-50"
+                        >
+                          <FaUndo className="text-[10px]" />
+                          <span>Open</span>
+                        </button>
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             ) : (
               <div className="glass-panel p-8 rounded-3xl border border-slate-200/60 dark:border-slate-800/80 bg-white/70 dark:bg-slate-900/70 text-center space-y-3 sticky top-20">

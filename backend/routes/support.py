@@ -106,11 +106,15 @@ async def get_support_ticket(
     return ticket
 
 
+from routes.admin import require_admin
+
+
 @router.patch("/support/{ticket_number}", response_model=SupportTicketResponse)
 async def update_support_ticket(
     ticket_number: str,
     update_data: SupportTicketUpdate,
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    current_admin: User = Depends(require_admin)
 ):
     """
     Update ticket status, admin reply, assigned agent, or priority.
