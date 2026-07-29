@@ -1,3 +1,16 @@
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+import requests
+
+try:
+    old_send = requests.Session.send
+    def unsafe_send(self, request, **kwargs):
+        kwargs['verify'] = False
+        return old_send(self, request, **kwargs)
+    requests.Session.send = unsafe_send
+except Exception:
+    pass
+
 from google import genai
 from config import settings
 import json
@@ -182,7 +195,6 @@ async def generate_itinerary(destination: str, days: int, travel_type: str, budg
         return get_mock_itinerary(destination, days, travel_type)
         
     try:
-        # Using the new google-genai library client structure
         client = genai.Client(api_key=settings.GEMINI_API_KEY)
         prompt = f"""
         Create a detailed and professional day-wise travel itinerary for {destination}.
@@ -197,11 +209,8 @@ async def generate_itinerary(destination: str, days: int, travel_type: str, budg
         - Recommended local restaurants or dining suggestions
         - Recommended travel tips (clothing, safety, local transport)
         """
-        
-        # Async call is supported in python standard libraries or synchronously with client.models.generate_content
-        # Let's run this standard model generation call
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-2.0-flash",
             contents=prompt
         )
         return response.text
@@ -227,13 +236,14 @@ async def generate_group_itinerary(
     """
     reqs_str = ", ".join(special_requirements) if special_requirements else "None"
     
+    group_header = f"### Group Travel Itinerary: {total_travelers} Travelers ({adults} Adults, {children} Children, {seniors} Seniors)\n"
+    group_header += f"**Group Type**: {relationship} | **Diet / Accessibility**: {reqs_str}\n\n"
+    group_notes = "#### Group Comfort & Rest Breaks\n"
+    group_notes += "1. **Scheduled Rest Break**: Afternoon 2:00 PM – 3:30 PM reserved for relaxation, tea, and senior/child rest.\n"
+    group_notes += "2. **Group Dining**: Pre-booked group thali tables recommended at major stops.\n\n"
+
     if not settings.GEMINI_API_KEY or settings.GEMINI_API_KEY == "your_gemini_api_key_here":
         base_itinerary = get_mock_itinerary(destination, days, travel_type)
-        group_header = f"### 👥 Group Travel Itinerary: {total_travelers} Travelers ({adults} Adults, {children} Children, {seniors} Seniors)\n"
-        group_header += f"**Group Type**: {relationship} | **Diet / Accessibility**: {reqs_str}\n\n"
-        group_notes = "#### 👨‍👩‍👧‍👦 Group Comfort & Rest Breaks\n"
-        group_notes += "1. **Scheduled Rest Break**: Afternoon 2:00 PM – 3:30 PM reserved for relaxation, tea, and senior/child rest.\n"
-        group_notes += "2. **Group Dining**: Pre-booked group thali tables recommended at major stops.\n\n"
         return group_header + group_notes + base_itinerary
 
     try:
@@ -257,11 +267,12 @@ async def generate_group_itinerary(
         4. Format in clean Markdown with Morning, Afternoon, Evening, Group Dining, and Essential Group Tips.
         """
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-2.0-flash",
             contents=prompt
         )
         return response.text
     except Exception as e:
         print(f"Error in Gemini group itinerary generation: {e}")
-        return get_mock_itinerary(destination, days, travel_type)
+        base_itinerary = get_mock_itinerary(destination, days, travel_type)
+        return group_header + group_notes + base_itinerary
 

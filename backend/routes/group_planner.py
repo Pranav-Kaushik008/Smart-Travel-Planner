@@ -125,7 +125,8 @@ async def group_recommend(
         split_method=req.split_method
     )
     
-    is_adults_only = "adult" in str(req.split_method).lower()
+    method_str = str(req.split_method).lower()
+    is_adults_only = "adult" in method_str or "child" in method_str or "free" in method_str
     paying_count = max(1, req.adults_count + req.seniors_count) if is_adults_only else total_travelers
     
     budget_per_person = round(req.total_budget / paying_count, 2)

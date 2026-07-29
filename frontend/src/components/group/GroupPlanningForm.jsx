@@ -42,18 +42,20 @@ const SPECIAL_NEEDS_OPTIONS = [
   { id: "Pet Friendly", label: "🐾 Pet Friendly" }
 ];
 
-const GroupPlanningForm = ({ groupState, setGroupState, accentTheme }) => {
-  const totalTravelers = Number(groupState.adults_count) + Number(groupState.children_count) + Number(groupState.seniors_count);
-  const totalBudget = Number(groupState.total_budget) || 0;
-  const isAdultsOnly = groupState.split_method && groupState.split_method.toLowerCase().includes("adult");
+const GroupPlanningForm = ({ groupState = {}, setGroupState, accentTheme = {} }) => {
+  const safeState = groupState || {};
+  const safeTheme = accentTheme || {};
+  const totalTravelers = Number(safeState.adults_count || 0) + Number(safeState.children_count || 0) + Number(safeState.seniors_count || 0);
+  const totalBudget = Number(safeState.total_budget) || 0;
+  const isAdultsOnly = safeState.split_method && safeState.split_method.toLowerCase().includes("adult");
   const payingCount = isAdultsOnly
-    ? Math.max(1, Number(groupState.adults_count) + Number(groupState.seniors_count))
+    ? Math.max(1, Number(safeState.adults_count || 0) + Number(safeState.seniors_count || 0))
     : Math.max(1, totalTravelers);
   const budgetPerPerson = payingCount > 0 ? (totalBudget / payingCount).toFixed(2) : 0;
-  const expectedDailySpend = Number(groupState.days) > 0 ? (totalBudget / Number(groupState.days)).toFixed(2) : 0;
+  const expectedDailySpend = Number(safeState.days) > 0 ? (totalBudget / Number(safeState.days)).toFixed(2) : 0;
 
   const toggleSpecialNeed = (needId) => {
-    const current = groupState.special_requirements || [];
+    const current = safeState.special_requirements || [];
     const updated = current.includes(needId)
       ? current.filter((item) => item !== needId)
       : [...current, needId];

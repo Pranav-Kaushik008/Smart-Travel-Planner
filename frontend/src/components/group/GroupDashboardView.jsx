@@ -21,14 +21,15 @@ import {
 } from "react-icons/fa";
 import toast from "react-hot-toast";
 
-const GroupDashboardView = ({ recommendation, groupState, accentTheme, groupTripId }) => {
+const GroupDashboardView = ({ recommendation, groupState = {}, accentTheme = {}, groupTripId }) => {
+  const safeGroupState = groupState || {};
   const [expenses, setExpenses] = useState([]);
   const [showExpenseModal, setShowExpenseModal] = useState(false);
   const [expenseForm, setExpenseForm] = useState({
     title: "",
     amount: "",
     category: "Food",
-    paid_by: groupState.organizer_name || "Organizer",
+    paid_by: safeGroupState.organizer_name || "Organizer",
     split_between: "All Members"
   });
   const [addingExpense, setAddingExpense] = useState(false);
@@ -38,13 +39,28 @@ const GroupDashboardView = ({ recommendation, groupState, accentTheme, groupTrip
   const roomPlan = recommendation.room_plan || {};
   const transportPlan = recommendation.transport_plan || {};
   const emergencyDir = recommendation.emergency_directory || {};
-  const splitSummary = recommendation.split_summary || [];
+  const isAdultsOnly = /adult|child|free/i.test(safeGroupState.split_method || "");
+  const adultsCount = Number(safeGroupState.adults_count || 1);
+  const childrenCount = Number(safeGroupState.children_count || 0);
+  const seniorsCount = Number(safeGroupState.seniors_count || 0);
+  const totalTravelersCount = Math.max(1, adultsCount + childrenCount + seniorsCount);
+  const totalGroupBudget = Number(safeGroupState.total_budget || 0);
+
+  const payingTravelersCount = isAdultsOnly ? Math.max(1, adultsCount + seniorsCount) : totalTravelersCount;
+  const computedPerPersonShare = payingTravelersCount > 0 ? Number((totalGroupBudget / payingTravelersCount).toFixed(2)) : 0;
+
+  const rawSplitSummary = recommendation.split_summary || [];
+  const activeSplitSummary = rawSplitSummary.map((row) => {
+    const isChild = String(row.role || "").toLowerCase().includes("child") || String(row.name || "").toLowerCase().includes("child");
+    const share = (isAdultsOnly && isChild) ? 0 : (isAdultsOnly ? computedPerPersonShare : row.share);
+    return { ...row, share };
+  });
 
   // Live Calculations
   const totalExpensesLogged = expenses.reduce((acc, curr) => acc + Number(curr.amount || 0), 0);
-  const remainingGroupBudget = Math.max(0, Number(groupState.total_budget || 0) - totalExpensesLogged);
-  const budgetUtilization = Number(groupState.total_budget || 0) > 0
-    ? Math.min(100, (totalExpensesLogged / Number(groupState.total_budget)) * 100).toFixed(1)
+  const remainingGroupBudget = Math.max(0, totalGroupBudget - totalExpensesLogged);
+  const budgetUtilization = totalGroupBudget > 0
+    ? Math.min(100, (totalExpensesLogged / totalGroupBudget) * 100).toFixed(1)
     : 0;
 
   const handleAddExpense = async (e) => {
@@ -218,42 +234,20 @@ const GroupDashboardView = ({ recommendation, groupState, accentTheme, groupTrip
                 <th className="pb-2">Traveler</th>
                 <th className="pb-2">Role</th>
                 <th className="pb-2">Individual Share</th>
-                <th className="pb-2">Contribution</th>
-                <th className="pb-2">Status / Balance</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 font-semibold text-slate-800 dark:text-slate-200">
-              {splitSummary.map((row, idx) => (
+              {activeSplitSummary.map((row, idx) => (
                 <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-950/40 transition-colors">
                   <td className="py-3 font-extrabold">{row.name}</td>
                   <td className="py-3 text-slate-400">{row.role}</td>
                   <td className="py-3 text-sky-500 font-bold">
                     {row.share === 0 ? (
-                      <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md text-[11px] font-black">
+                      <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg text-xs font-black">
                         ₹0 (Children Free)
                       </span>
                     ) : (
-                      `₹${row.share?.toLocaleString()}`
-                    )}
-                  </td>
-                  <td className="py-3 text-emerald-500 font-bold">₹{row.contribution?.toLocaleString()}</td>
-                  <td className="py-3">
-                    {row.share === 0 ? (
-                      <span className="text-emerald-600 dark:text-emerald-400 font-extrabold bg-emerald-500/10 px-2.5 py-1 rounded-lg">
-                        ✅ Free (Children)
-                      </span>
-                    ) : row.pending > 0 ? (
-                      <span className="text-amber-500 font-bold bg-amber-500/10 px-2.5 py-1 rounded-lg">
-                        Pending: ₹{row.pending?.toLocaleString()}
-                      </span>
-                    ) : row.extra > 0 ? (
-                      <span className="text-emerald-500 font-bold bg-emerald-500/10 px-2.5 py-1 rounded-lg">
-                        Extra: ₹{row.extra?.toLocaleString()}
-                      </span>
-                    ) : (
-                      <span className="text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg">
-                        Settled
-                      </span>
+                      `₹${Number(row.share || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
                     )}
                   </td>
                 </tr>

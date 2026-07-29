@@ -115,7 +115,8 @@ def calculate_expense_split(total_budget: float, adults: int, children: int, sen
     total_travelers = max(1, adults + children + seniors)
     paying_travelers = max(1, adults + seniors)
     
-    is_adults_only = "adult" in str(split_method).lower()
+    method_str = str(split_method).lower()
+    is_adults_only = "adult" in method_str or "child" in method_str or "free" in method_str
     
     if is_adults_only:
         per_paying_share = round(total_budget / paying_travelers, 2)
