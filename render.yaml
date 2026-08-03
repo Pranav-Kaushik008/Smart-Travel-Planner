@@ -1,0 +1,47 @@
+services:
+  # ─── Backend (FastAPI) ───────────────────────────────────────────────────────
+  - type: web
+    name: smart-travel-planner-api
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        sync: false          # Set manually in Render dashboard
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: OPENWEATHER_API_KEY
+        sync: false
+      - key: OPENROUTE_API_KEY
+        sync: false
+      - key: AVIATIONSTACK_API_KEY
+        sync: false
+      - key: RAPIDAPI_KEY
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: JWT_SECRET_KEY
+        sync: false
+      - key: ADMIN_EMAIL
+        value: pranavkaushikyr@gmail.com
+      - key: PYTHON_VERSION
+        value: 3.11.0
+
+  # ─── Frontend (React/Vite static site) ──────────────────────────────────────
+  - type: web
+    name: smart-travel-planner-ui
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install --legacy-peer-deps && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false          # Set to your backend Render URL e.g. https://smart-travel-planner-api.onrender.com
+    routes:
+      - type: rewrite
+        source: /api/*
+        destination: https://smart-travel-planner-api.onrender.com/api/:splat
+      - type: rewrite
+        source: /*
+        destination: /index.html
