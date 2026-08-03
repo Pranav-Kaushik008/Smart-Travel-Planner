@@ -82,8 +82,9 @@ async def get_dashboard_analytics(db: AsyncSession = Depends(get_db), current_us
     month_counts = defaultdict(int)
     trip_dates_list = []
     for dt in dates:
-        month_counts[dt.strftime("%b %Y")] += 1
-        trip_dates_list.append(dt.strftime("%Y-%m-%d"))
+        if dt:
+            month_counts[dt.strftime("%b %Y")] += 1
+            trip_dates_list.append(dt.strftime("%Y-%m-%d"))
 
     trips_over_time = [TripMonthAnalytics(month=m, count=c) for m, c in month_counts.items()]
 
@@ -112,7 +113,8 @@ async def get_dashboard_analytics(db: AsyncSession = Depends(get_db), current_us
         stmt_g_dates = select(GroupTrip.created_at).where(GroupTrip.user_id == uid)
         g_dates = (await db.execute(stmt_g_dates)).scalars().all()
         for dt in g_dates:
-            trip_dates_list.append(dt.strftime("%Y-%m-%d"))
+            if dt:
+                trip_dates_list.append(dt.strftime("%Y-%m-%d"))
 
         # Group popular destinations
         stmt_g_dest = (
