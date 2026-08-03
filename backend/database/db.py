@@ -8,11 +8,12 @@ DATABASE_URL = settings.DATABASE_URL
 is_sqlite = DATABASE_URL.startswith("sqlite")
 
 if not is_sqlite:
-    # Ensure PostgreSQL uses asyncpg driver
-    if "postgresql://" in DATABASE_URL:
-        DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://")
-    if not DATABASE_URL.startswith("postgresql+asyncpg://"):
-        DATABASE_URL = "postgresql+asyncpg://postgres:password@localhost:5432/travelplanner"
+    # Ensure PostgreSQL uses asyncpg driver (handles Render postgres:// or postgresql://)
+    if DATABASE_URL.startswith("postgres://"):
+        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+asyncpg://", 1)
+    elif DATABASE_URL.startswith("postgresql://"):
+        DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
+
 
 # Create engine with appropriate settings per database type
 if is_sqlite:
