@@ -693,6 +693,7 @@ const TravelPlanner = () => {
               src={DESTINATION_COVERS[recommendation.destination] || "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800"}
               alt={recommendation.destination}
               className="absolute inset-0 w-full h-full object-cover"
+              onError={e => { e.target.onerror = null; e.target.src = "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800"; }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
             
@@ -842,6 +843,7 @@ const TravelPlanner = () => {
               src={DESTINATION_COVERS[groupRecommendation.destination] || "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800"}
               alt={groupRecommendation.destination}
               className="absolute inset-0 w-full h-full object-cover"
+              onError={e => { e.target.onerror = null; e.target.src = "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800"; }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
             

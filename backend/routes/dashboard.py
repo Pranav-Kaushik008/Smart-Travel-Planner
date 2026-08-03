@@ -20,10 +20,6 @@ async def get_dashboard_analytics(db: AsyncSession = Depends(get_db), current_us
     stmt_count = select(func.count(Trip.id)).where(Trip.user_id == uid)
     total_trips = (await db.execute(stmt_count)).scalar() or 0
 
-    if total_trips == 0:
-        # Still check group trips even if no individual trips
-        pass
-
     average_budget = 0.0
     average_days = 0.0
     if total_trips > 0:
@@ -79,12 +75,16 @@ async def get_dashboard_analytics(db: AsyncSession = Depends(get_db), current_us
             BudgetAnalytics(category="Miscellaneous", amount=float(actuals[4] or 0.0)),
         ]
 
-    # Trips over time (individual)
+    # Trips over time & exact creation dates (individual)
     stmt_trips = select(Trip.created_at).where(Trip.user_id == uid).order_by(Trip.created_at.asc())
     dates = (await db.execute(stmt_trips)).scalars().all()
+    
     month_counts = defaultdict(int)
+    trip_dates_list = []
     for dt in dates:
         month_counts[dt.strftime("%b %Y")] += 1
+        trip_dates_list.append(dt.strftime("%Y-%m-%d"))
+
     trips_over_time = [TripMonthAnalytics(month=m, count=c) for m, c in month_counts.items()]
 
     # ─── GROUP TRIPS ─────────────────────────────────────────────────────────
@@ -107,6 +107,12 @@ async def get_dashboard_analytics(db: AsyncSession = Depends(get_db), current_us
         total_group_travelers = int(g_agg[0] or 0)
         avg_group_size = float(g_agg[1] or 0.0)
         total_group_budget = float(g_agg[2] or 0.0)
+
+        # Group dates
+        stmt_g_dates = select(GroupTrip.created_at).where(GroupTrip.user_id == uid)
+        g_dates = (await db.execute(stmt_g_dates)).scalars().all()
+        for dt in g_dates:
+            trip_dates_list.append(dt.strftime("%Y-%m-%d"))
 
         # Group popular destinations
         stmt_g_dest = (
@@ -154,6 +160,7 @@ async def get_dashboard_analytics(db: AsyncSession = Depends(get_db), current_us
         budget_breakdown=budget_breakdown,
         actual_breakdown=actual_breakdown,
         trips_over_time=trips_over_time,
+        trip_dates=trip_dates_list,
         total_group_trips=total_group_trips,
         total_group_travelers=total_group_travelers,
         avg_group_size=round(avg_group_size, 1),

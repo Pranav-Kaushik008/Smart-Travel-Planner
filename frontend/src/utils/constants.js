@@ -19,7 +19,7 @@ export const DESTINATION_COVERS = {
   Goa: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/BeachFun.jpg/960px-BeachFun.jpg",
   Andaman: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Radha_Nagar_beach%2C_Havelock_Island%2C_Andamn%2C_India-_Sun_set_view.jpg/960px-Radha_Nagar_beach%2C_Havelock_Island%2C_Andamn%2C_India-_Sun_set_view.jpg",
   Kerala: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/House_Boat_DSW.jpg/960px-House_Boat_DSW.jpg",
-  Mangaluru: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Panambur_Beach%2C_Mangalore.jpg/960px-Panambur_Beach%2C_Mangalore.jpg",
+  Mangaluru: "/mangaluru_beach.jpg",
 
   // Mountain & Adventure
   Kedarnath: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Kedarnath_Temple_in_Rainy_season.jpg/960px-Kedarnath_Temple_in_Rainy_season.jpg",
@@ -48,14 +48,15 @@ export const DESTINATION_COVERS = {
   Sundarbans: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Save_the_sundarbans_20.jpg/960px-Save_the_sundarbans_20.jpg",
 
   // Spiritual & Religious
-  Ayodhya: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Ayodhya_Ram_Mandir_Inauguration_Day_Picture.jpg/960px-Ayodhya_Ram_Mandir_Inauguration_Day_Picture.jpg",
+  Ayodhya: "/ayodhya_ram_mandir.jpg",
   Varanasi: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Varanasi%2C_India%2C_Ghats%2C_Cremation_ceremony_in_progress.jpg/960px-Varanasi%2C_India%2C_Ghats%2C_Cremation_ceremony_in_progress.jpg",
   Tirupati: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Tirumala_090615.jpg/960px-Tirumala_090615.jpg",
   Haridwar: "https://upload.wikimedia.org/wikipedia/commons/0/0f/Evening_view_of_Har-ki-Pauri%2C_Haridwar.jpg",
   Amritsar: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/The_Golden_Temple_of_Amrithsar_7.jpg/960px-The_Golden_Temple_of_Amrithsar_7.jpg",
-  Shirdi: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Ayodhya_Ram_Mandir_Inauguration_Day_Picture.jpg/960px-Ayodhya_Ram_Mandir_Inauguration_Day_Picture.jpg",
-  Dwarka: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Ayodhya_Ram_Mandir_Inauguration_Day_Picture.jpg/960px-Ayodhya_Ram_Mandir_Inauguration_Day_Picture.jpg",
-  Ujjain: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Ayodhya_Ram_Mandir_Inauguration_Day_Picture.jpg/960px-Ayodhya_Ram_Mandir_Inauguration_Day_Picture.jpg",
-  Puri: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Radha_Nagar_beach%2C_Havelock_Island%2C_Andamn%2C_India-_Sun_set_view.jpg/960px-Radha_Nagar_beach%2C_Havelock_Island%2C_Andamn%2C_India-_Sun_set_view.jpg",
-  Rameswaram: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Radha_Nagar_beach%2C_Havelock_Island%2C_Andamn%2C_India-_Sun_set_view.jpg/960px-Radha_Nagar_beach%2C_Havelock_Island%2C_Andamn%2C_India-_Sun_set_view.jpg",
+  Shirdi: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Shirdi_Sai_Baba_Samadhi_Mandir.jpg/960px-Shirdi_Sai_Baba_Samadhi_Mandir.jpg",
+  Dwarka: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Dwarkadhish_temple_dwarka.jpg/960px-Dwarkadhish_temple_dwarka.jpg",
+  Ujjain: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Mahakaleshwar_Ujjain.jpg/960px-Mahakaleshwar_Ujjain.jpg",
+  Puri: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Jagannath_Temple%2C_Puri_-_After_Renovation_2015.jpg/960px-Jagannath_Temple%2C_Puri_-_After_Renovation_2015.jpg",
+  Rameswaram: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Ramanathaswamy_Temple_Rameswaram.jpg/960px-Ramanathaswamy_Temple_Rameswaram.jpg",
+  Badrinath: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Badrinath_Temple.jpg/960px-Badrinath_Temple.jpg",
 };

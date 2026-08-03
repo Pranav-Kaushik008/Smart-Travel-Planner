@@ -19,6 +19,7 @@ const TripCard = ({ trip, onDelete, onViewDetails }) => {
           src={coverUrl}
           alt={trip.destination}
           className="w-full h-full object-cover"
+          onError={e => { e.target.onerror = null; e.target.src = "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=500&q=80"; }}
         />
         <div className="absolute top-3 left-3 flex flex-col gap-1">
           {trip.is_group_trip ? (

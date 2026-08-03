@@ -23,6 +23,7 @@ class DashboardAnalytics(BaseModel):
     budget_breakdown: List[BudgetAnalytics]
     actual_breakdown: List[BudgetAnalytics]  # Sum of actual expenses by category
     trips_over_time: List[TripMonthAnalytics]
+    trip_dates: List[str] = []  # YYYY-MM-DD list for activity heatmap
     # Group trip stats
     total_group_trips: int = 0
     total_group_travelers: int = 0
