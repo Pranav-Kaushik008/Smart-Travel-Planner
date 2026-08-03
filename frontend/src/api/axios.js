@@ -1,8 +1,16 @@
 import axios from "axios";
 
-// Create instance pointing to API proxy or backend URL
+// Determine base API URL cleanly at initialization
+let rawUrl = import.meta.env.VITE_API_URL || "";
+let baseURL = "/api";
+
+if (rawUrl) {
+  rawUrl = rawUrl.trim().replace(/\/+$/, "");
+  baseURL = rawUrl.endsWith("/api") ? rawUrl : `${rawUrl}/api`;
+}
+
 const api = axios.create({
-  baseURL: "/api", // Managed by Vite proxy in development
+  baseURL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -17,19 +25,23 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 // Response interceptor to handle token expiry / unauthenticated responses
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
+    const isAuthRequest = error.config?.url?.includes("/login") || error.config?.url?.includes("/register");
+    
+    if (error.response && error.response.status === 401 && !isAuthRequest) {
       localStorage.removeItem("token");
       localStorage.removeItem("profile_extra");
-      if (window.location.pathname !== "/login" && window.location.pathname !== "/register" && window.location.pathname !== "/") {
+      if (
+        window.location.pathname !== "/login" &&
+        window.location.pathname !== "/register" &&
+        window.location.pathname !== "/"
+      ) {
         window.location.href = "/login?expired=true";
       }
     }
