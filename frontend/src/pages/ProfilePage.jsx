@@ -91,15 +91,40 @@ const ProfilePage = () => {
   }, [user]);
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchFreshProfile = async () => {
       try {
-        const res = await api.get("/dashboard/analytics");
-        setStats(res.data);
+        const [profRes, statsRes] = await Promise.all([
+          api.get("/profile"),
+          api.get("/dashboard/analytics").catch(() => ({ data: null }))
+        ]);
+        if (profRes.data) {
+          updateUser(profRes.data);
+          const u = profRes.data;
+          setProfile({
+            full_name: u.full_name || u.username || "",
+            email: u.email || "",
+            profile_pic: u.profile_pic || "",
+            phone: u.phone || "",
+            location: u.location || "",
+            dob: u.dob || "",
+            bio: u.bio || "",
+            interests: u.interests || [],
+            favorite_destinations: u.favorite_destinations || [],
+            languages: u.languages || [],
+            travel_style: u.travel_style || "Boutique",
+            preferred_season: u.preferred_season || "All"
+          });
+        }
+        if (statsRes?.data) {
+          setStats(statsRes.data);
+        }
       } catch (err) {
-        console.error("Error fetching stats for profile", err);
+        console.error("Error fetching fresh profile", err);
+      } finally {
+        setLoading(false);
       }
     };
-    fetchStats();
+    fetchFreshProfile();
   }, []);
 
   const handleChange = (key, value) => {
