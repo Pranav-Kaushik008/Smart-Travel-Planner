@@ -14,6 +14,10 @@ if not is_sqlite:
     elif DATABASE_URL.startswith("postgresql://"):
         DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
 
+    # asyncpg does not recognize 'sslmode' query parameter (uses 'ssl' instead)
+    if "sslmode=" in DATABASE_URL:
+        DATABASE_URL = DATABASE_URL.replace("sslmode=", "ssl=")
+
 
 # Create engine with appropriate settings per database type
 if is_sqlite:
